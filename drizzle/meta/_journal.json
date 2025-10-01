@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1759214877150,
+      "tag": "0000_sad_nocturne",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1759216180065,
+      "tag": "0001_yummy_thor_girl",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1759298271291,
+      "tag": "0002_nifty_lily_hollister",
+      "breakpoints": true
+    }
+  ]
+}
