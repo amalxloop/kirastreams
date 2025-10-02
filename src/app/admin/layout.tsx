@@ -2,10 +2,10 @@
 
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { AdminAuthProvider, useAdminAuth } from "@/lib/admin-auth";
+import { useAdmin } from "@/lib/hooks/useAdmin";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,90 +24,38 @@ import {
   Settings,
   Menu,
   LogOut,
-  UserPlus,
-  Home,
+  UserCog,
 } from "lucide-react";
+import { useState } from "react";
 
-function AdminSidebar({ mobile = false }: { mobile?: boolean }) {
-  const pathname = usePathname();
+const navItems = [
+  { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/admin/content", icon: Film, label: "Content" },
+  { href: "/admin/users", icon: Users, label: "Users" },
+  { href: "/admin/analytics", icon: BarChart3, label: "Analytics" },
+  { href: "/admin/admins", icon: UserCog, label: "Admins" },
+  { href: "/admin/settings", icon: Settings, label: "Settings" },
+];
 
-  const navItems = [
-    { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/admin/users", icon: Users, label: "Users" },
-    { href: "/admin/content", icon: Film, label: "Content" },
-    { href: "/admin/analytics", icon: BarChart3, label: "Analytics" },
-    { href: "/admin/admins", icon: UserPlus, label: "Admins" },
-    { href: "/admin/settings", icon: Settings, label: "Settings" },
-  ];
-
-  return (
-    <div className={`flex flex-col h-full ${mobile ? "py-4" : ""}`}>
-      <div className="px-4 py-6 flex items-center gap-3 border-b border-border/40">
-        <div className="relative h-8 w-8 rounded-md overflow-hidden shadow-[0_0_24px_2px_rgba(167,139,250,0.45)]">
-          <Image
-            src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
-            alt="KiraStreams"
-            fill
-            className="object-cover"
-          />
-        </div>
-        <div>
-          <h2 className="font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">
-            KiraStreams
-          </h2>
-          <p className="text-xs text-muted-foreground">Admin Panel</p>
-        </div>
-      </div>
-
-      <nav className="flex-1 px-3 py-4 space-y-1">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                isActive
-                  ? "bg-violet-600/10 text-violet-400 border border-violet-500/20"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
-              }`}
-            >
-              <Icon className="h-5 w-5" />
-              <span className="font-medium">{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="px-3 py-4 border-t border-border/40">
-        <Link href="/">
-          <Button variant="outline" className="w-full justify-start" size="sm">
-            <Home className="mr-2 h-4 w-4" />
-            Back to Site
-          </Button>
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function AdminLayoutContent({ children }: { children: React.ReactNode }) {
-  const { admin, logout, isLoading } = useAdminAuth();
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { admin, loading, logout } = useAdmin();
   const router = useRouter();
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !admin && pathname !== "/admin/login") {
+    if (!loading && !admin && pathname !== "/admin/login") {
       router.push("/admin/login");
     }
-  }, [admin, isLoading, pathname, router]);
+  }, [admin, loading, pathname, router]);
 
+  // Login page doesn't need layout
   if (pathname === "/admin/login") {
     return children;
   }
 
-  if (isLoading) {
+  // Show loading state
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-500"></div>
@@ -115,65 +63,159 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // No admin = redirect (handled by useEffect)
   if (!admin) {
     return null;
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-background">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-64 border-r border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <AdminSidebar />
+      <aside className="hidden lg:block w-64 border-r border-border/40 bg-card/50">
+        <div className="flex h-16 items-center gap-3 border-b border-border/40 px-6">
+          <div className="relative h-8 w-8 rounded-md overflow-hidden shadow-[0_0_20px_2px_rgba(167,139,250,0.4)]">
+            <Image
+              src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
+              alt="KiraStreams Logo"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <span className="font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">
+            Admin Panel
+          </span>
+        </div>
+
+        <nav className="flex-1 space-y-1 px-3 py-4">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                  isActive
+                    ? "bg-violet-500/20 text-violet-300 shadow-[0_0_12px_rgba(139,92,246,0.3)]"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="border-t border-border/40 p-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-auto p-2">
+                <Avatar className="h-8 w-8 ring-2 ring-violet-500/50">
+                  <AvatarFallback>{admin?.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col items-start text-xs">
+                  <span className="font-medium">{admin?.name}</span>
+                  <span className="text-muted-foreground">{admin?.email}</span>
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Admin Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/">Back to Site</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout} className="text-red-500">
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="sticky top-0 z-40 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="flex items-center justify-between px-4 lg:px-6 h-16">
-            {/* Mobile Menu */}
-            <Sheet>
-              <SheetTrigger asChild className="lg:hidden">
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-64">
-                <AdminSidebar mobile />
-              </SheetContent>
-            </Sheet>
+        {/* Mobile Header */}
+        <header className="lg:hidden sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border/40 bg-card/80 backdrop-blur px-4">
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-64 p-0">
+              <div className="flex h-16 items-center gap-3 border-b border-border/40 px-6">
+                <div className="relative h-8 w-8 rounded-md overflow-hidden">
+                  <Image
+                    src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
+                    alt="KiraStreams Logo"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-fuchsia-300">
+                  Admin Panel
+                </span>
+              </div>
+              <nav className="space-y-1 px-3 py-4">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                        isActive
+                          ? "bg-violet-500/20 text-violet-300"
+                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </SheetContent>
+          </Sheet>
 
-            <div className="hidden lg:block">
-              <h1 className="text-xl font-semibold">Admin Dashboard</h1>
-            </div>
-
-            {/* User Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                  <Avatar className="h-9 w-9 ring-2 ring-violet-500/50 shadow-[0_0_12px_rgba(139,92,246,0.6)]">
-                    <AvatarImage src={admin.avatarUrl || undefined} />
-                    <AvatarFallback className="bg-violet-600">
-                      {admin.name.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{admin.name}</p>
-                    <p className="text-xs text-muted-foreground">{admin.email}</p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="flex-1 flex items-center gap-2">
+            <Image
+              src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
+              alt="Logo"
+              width={28}
+              height={28}
+              className="rounded"
+            />
+            <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-fuchsia-300">
+              Admin
+            </span>
           </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="h-8 w-8 ring-2 ring-violet-500/50 cursor-pointer">
+                <AvatarFallback>{admin?.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>{admin?.name}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/">Back to Site</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout} className="text-red-500">
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </header>
 
         {/* Page Content */}
@@ -182,13 +224,5 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     </div>
-  );
-}
-
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <AdminAuthProvider>
-      <AdminLayoutContent>{children}</AdminLayoutContent>
-    </AdminAuthProvider>
   );
 }

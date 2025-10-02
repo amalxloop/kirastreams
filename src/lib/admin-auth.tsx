@@ -24,7 +24,7 @@ interface AdminAuthContextType {
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
-export function AdminAuthProvider({ children }: { children: React.Node }) {
+export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [admin, setAdmin] = useState<AdminUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +83,7 @@ export function AdminAuthProvider({ children }: { children: React.Node }) {
 
       const data = await response.json();
       setToken(data.token);
-      setAdmin(data.user);
+      setAdmin(data.admin);
       localStorage.setItem("admin_token", data.token);
       router.push("/admin");
     } catch (error: any) {

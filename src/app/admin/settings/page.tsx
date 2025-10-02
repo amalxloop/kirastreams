@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useAdmin } from "@/lib/hooks/useAdmin";
-import AdminLayout from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -72,84 +71,82 @@ export default function SettingsPage() {
   if (authLoading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Platform Settings</h1>
-          <p className="text-muted-foreground">Configure your platform settings</p>
-        </div>
-
-        <form onSubmit={saveSettings} className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <SettingsIcon className="h-5 w-5 text-violet-500" />
-                Branding
-              </CardTitle>
-              <CardDescription>Customize your platform branding</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Platform Name</Label>
-                  <Input
-                    value={settings.platformName}
-                    onChange={(e) => setSettings({ ...settings, platformName: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Primary Color</Label>
-                  <Input
-                    type="color"
-                    value={settings.primaryColor}
-                    onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Logo URL</Label>
-                <Input
-                  placeholder="https://..."
-                  value={settings.logoUrl}
-                  onChange={(e) => setSettings({ ...settings, logoUrl: e.target.value })}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Platform Configuration</CardTitle>
-              <CardDescription>Configure platform features and settings</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>CDN Base URL</Label>
-                <Input
-                  placeholder="https://cdn.example.com"
-                  value={settings.cdnBaseUrl}
-                  onChange={(e) => setSettings({ ...settings, cdnBaseUrl: e.target.value })}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Watermark Enabled</Label>
-                  <p className="text-sm text-muted-foreground">Add watermark to videos</p>
-                </div>
-                <Switch
-                  checked={settings.watermarkEnabled}
-                  onCheckedChange={(checked) => setSettings({ ...settings, watermarkEnabled: checked })}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Button type="submit" className="bg-violet-600 hover:bg-violet-500">
-            <Save className="mr-2 h-4 w-4" />
-            Save Settings
-          </Button>
-        </form>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Platform Settings</h1>
+        <p className="text-muted-foreground">Configure your platform settings</p>
       </div>
-    </AdminLayout>
+
+      <form onSubmit={saveSettings} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <SettingsIcon className="h-5 w-5 text-violet-500" />
+              Branding
+            </CardTitle>
+            <CardDescription>Customize your platform branding</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Platform Name</Label>
+                <Input
+                  value={settings.platformName}
+                  onChange={(e) => setSettings({ ...settings, platformName: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Primary Color</Label>
+                <Input
+                  type="color"
+                  value={settings.primaryColor}
+                  onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Logo URL</Label>
+              <Input
+                placeholder="https://..."
+                value={settings.logoUrl}
+                onChange={(e) => setSettings({ ...settings, logoUrl: e.target.value })}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Platform Configuration</CardTitle>
+            <CardDescription>Configure platform features and settings</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>CDN Base URL</Label>
+              <Input
+                placeholder="https://cdn.example.com"
+                value={settings.cdnBaseUrl}
+                onChange={(e) => setSettings({ ...settings, cdnBaseUrl: e.target.value })}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Watermark Enabled</Label>
+                <p className="text-sm text-muted-foreground">Add watermark to videos</p>
+              </div>
+              <Switch
+                checked={settings.watermarkEnabled}
+                onCheckedChange={(checked) => setSettings({ ...settings, watermarkEnabled: checked })}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Button type="submit" className="bg-violet-600 hover:bg-violet-500">
+          <Save className="mr-2 h-4 w-4" />
+          Save Settings
+        </Button>
+      </form>
+    </div>
   );
 }
