@@ -40,6 +40,7 @@ export default function WatchPage() {
   const [loading, setLoading] = useState(true);
   const [watchProgress, setWatchProgress] = useState<any>(null);
   const [player, setPlayer] = useState<PlayerType>("videasy");
+  const [watermarkEnabled, setWatermarkEnabled] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -196,6 +197,22 @@ export default function WatchPage() {
               allowFullScreen
               allow="autoplay; fullscreen; encrypted-media"
             />
+            {/* Watermark Overlay */}
+            {watermarkEnabled && (
+              <div className="absolute bottom-4 right-4 z-10 pointer-events-none">
+                <div className="flex items-center gap-2 px-3 py-2 bg-black/40 backdrop-blur-sm rounded-lg border border-white/10">
+                  <div className="relative h-6 w-6 rounded overflow-hidden">
+                    <Image
+                      src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
+                      alt="KiraStreams"
+                      fill
+                      className="object-cover opacity-90"
+                    />
+                  </div>
+                  <span className="text-xs font-medium text-white/90 tracking-wide">KiraStreams</span>
+                </div>
+              </div>
+            )}
           </div>
         </Card>
 
