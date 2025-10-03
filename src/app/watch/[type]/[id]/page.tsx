@@ -23,7 +23,7 @@ import {
   TMDBMovie,
 } from "@/lib/tmdb";
 
-type PlayerType = "videasy" | "vidluna";
+type PlayerType = "videasy" | "vidluna" | "vidora";
 
 export default function WatchPage() {
   const params = useParams();
@@ -122,6 +122,12 @@ export default function WatchPage() {
     } else if (type === "tv") {
       playerUrl = `https://vidluna.fun/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false`;
     }
+  } else if (player === "vidora") {
+    if (type === "movie") {
+      playerUrl = `https://vidora.su/embed/movie/${id}?color=8B5CF6&autoplay=false&muted=false`;
+    } else if (type === "tv") {
+      playerUrl = `https://vidora.su/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false`;
+    }
   }
 
   if (loading) {
@@ -181,6 +187,12 @@ export default function WatchPage() {
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-fuchsia-500" />
                   <span>Vidluna</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="vidora">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-sky-500" />
+                  <span>Vidora</span>
                 </div>
               </SelectItem>
             </SelectContent>
