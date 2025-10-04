@@ -124,9 +124,9 @@ export default function WatchPage() {
     }
   } else if (player === "vidora") {
     if (type === "movie") {
-      playerUrl = `https://vidora.su/embed/movie/${id}?color=8B5CF6&autoplay=false&muted=false`;
+      playerUrl = `https://vidora.su/embed/movie/${id}`;
     } else if (type === "tv") {
-      playerUrl = `https://vidora.su/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false`;
+      playerUrl = `https://vidora.su/embed/tv/${id}/${selectedSeason}/${selectedEpisode}`;
     }
   }
 
