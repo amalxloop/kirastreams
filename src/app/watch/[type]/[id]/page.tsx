@@ -234,7 +234,7 @@ export default function WatchPage() {
               </div>
             )}
             <iframe
-              key={`${player}-${id}`}
+              key={type === "tv" ? `${player}-tv-${id}-${selectedSeason}-${selectedEpisode}` : `${player}-movie-${id}`}
               src={playerUrl}
               className="absolute top-0 left-0 w-full h-full"
               frameBorder="0"
