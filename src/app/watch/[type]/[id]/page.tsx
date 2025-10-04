@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronLeft, Star, Clock, Calendar, PlayCircle } from "lucide-react";
+import { ChevronLeft, Star, Clock, Calendar, PlayCircle, Loader2 } from "lucide-react";
 import {
   getMovieDetails,
   getTVDetails,
@@ -38,10 +38,12 @@ export default function WatchPage() {
   const [seasonData, setSeasonData] = useState<TMDBSeason | null>(null);
   const [recommendations, setRecommendations] = useState<TMDBMovie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [playerLoading, setPlayerLoading] = useState(true);
   const [watchProgress, setWatchProgress] = useState<any>(null);
   const [player, setPlayer] = useState<PlayerType>("videasy");
   const [watermarkEnabled, setWatermarkEnabled] = useState(true);
 
+  // Fetch initial data (only when type or id changes)
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -54,8 +56,6 @@ export default function WatchPage() {
         } else if (type === "tv") {
           const details = await getTVDetails(id);
           setTVDetails(details);
-          const season = await getTVSeason(id, selectedSeason);
-          setSeasonData(season);
           const recs = await getPopular("tv");
           setRecommendations(recs.slice(0, 6));
         }
@@ -66,7 +66,27 @@ export default function WatchPage() {
       }
     }
     fetchData();
-  }, [type, id, selectedSeason]);
+  }, [type, id]);
+
+  // Fetch season data separately (only when season changes for TV shows)
+  useEffect(() => {
+    async function fetchSeasonData() {
+      if (type === "tv" && tvDetails) {
+        try {
+          const season = await getTVSeason(id, selectedSeason);
+          setSeasonData(season);
+        } catch (error) {
+          console.error("Failed to fetch season:", error);
+        }
+      }
+    }
+    fetchSeasonData();
+  }, [type, id, selectedSeason, tvDetails]);
+
+  // Reset player loading when player changes
+  useEffect(() => {
+    setPlayerLoading(true);
+  }, [player, selectedSeason, selectedEpisode]);
 
   // Watch progress tracking
   useEffect(() => {
@@ -133,7 +153,10 @@ export default function WatchPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-5 w-5 animate-spin text-violet-500" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -201,13 +224,23 @@ export default function WatchPage() {
 
         <Card className="bg-background/70 backdrop-blur border border-border/50 overflow-hidden">
           <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+            {/* Loading Overlay */}
+            {playerLoading && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-6 w-6 animate-spin text-violet-500" />
+                  <span className="text-sm text-muted-foreground">Loading player...</span>
+                </div>
+              </div>
+            )}
             <iframe
-              key={`${player}-${type}-${id}-${selectedSeason}-${selectedEpisode}`}
+              key={`${player}-${id}`}
               src={playerUrl}
               className="absolute top-0 left-0 w-full h-full"
               frameBorder="0"
               allowFullScreen
               allow="autoplay; fullscreen; encrypted-media"
+              onLoad={() => setPlayerLoading(false)}
             />
             {/* Watermark Overlay */}
             {watermarkEnabled && (
