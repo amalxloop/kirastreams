@@ -245,16 +245,16 @@ export default function WatchPage() {
             {/* Watermark Overlay */}
             {watermarkEnabled && (
               <div className="absolute bottom-4 right-4 z-10 pointer-events-none">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-black/15 backdrop-blur-md rounded-lg border border-white/5 shadow-lg">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-black/5 backdrop-blur-md rounded-lg border border-white/5 shadow-lg">
                   <div className="relative h-5 w-5 rounded overflow-hidden">
                     <Image
                       src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
                       alt="KiraStreams"
                       fill
-                      className="object-cover opacity-50"
+                      className="object-cover opacity-25"
                     />
                   </div>
-                  <span className="text-xs font-medium text-white/50 tracking-wide">KiraStreams</span>
+                  <span className="text-xs font-medium text-white/30 tracking-wide">KiraStreams</span>
                 </div>
               </div>
             )}
