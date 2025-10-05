@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,6 +42,34 @@ export default function WatchPage() {
   const [watchProgress, setWatchProgress] = useState<any>(null);
   const [player, setPlayer] = useState<PlayerType>("videasy");
   const [watermarkEnabled, setWatermarkEnabled] = useState(true);
+
+  // Memoize player URL to prevent unnecessary recalculations
+  const playerUrl = useMemo(() => {
+    let url = "";
+    if (player === "videasy") {
+      if (type === "movie") {
+        const startTime = watchProgress?.timestamp ? `?progress=${Math.floor(watchProgress.timestamp)}` : "";
+        const separator = startTime ? "&" : "?";
+        url = `https://player.videasy.net/movie/${id}${startTime}${separator}color=8B5CF6&overlay=true`;
+      } else if (type === "tv" && tvDetails) {
+        const startTime = watchProgress?.timestamp ? `?progress=${Math.floor(watchProgress.timestamp)}&` : "?";
+        url = `https://player.videasy.net/tv/${id}/${selectedSeason}/${selectedEpisode}${startTime}nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&color=8B5CF6&overlay=true`;
+      }
+    } else if (player === "vidluna") {
+      if (type === "movie") {
+        url = `https://vidluna.fun/embed/movie/${id}?color=8B5CF6&autoplay=false&muted=false`;
+      } else if (type === "tv") {
+        url = `https://vidluna.fun/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false`;
+      }
+    } else if (player === "vidora") {
+      if (type === "movie") {
+        url = `https://vidora.su/movie/${id}?autoplay=true&colour=8B5CF6`;
+      } else if (type === "tv") {
+        url = `https://vidora.su/tv/${id}/${selectedSeason}/${selectedEpisode}?autoplay=true&colour=8B5CF6&autonextepisode=true`;
+      }
+    }
+    return url;
+  }, [player, type, id, selectedSeason, selectedEpisode, watchProgress?.timestamp, tvDetails]);
 
   // Fetch initial data (only when type or id changes)
   useEffect(() => {
@@ -86,6 +114,13 @@ export default function WatchPage() {
   // Reset player loading when player changes
   useEffect(() => {
     setPlayerLoading(true);
+    
+    // Add timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      setPlayerLoading(false);
+    }, 10000); // 10 second timeout
+    
+    return () => clearTimeout(timeout);
   }, [player, selectedSeason, selectedEpisode]);
 
   // Watch progress tracking
@@ -126,29 +161,6 @@ export default function WatchPage() {
   const rating = details?.vote_average || 0;
   const cast = details?.credits?.cast.slice(0, 6) || [];
   const genres = details?.genres || [];
-
-  let playerUrl = "";
-  if (player === "videasy") {
-    if (type === "movie") {
-      const startTime = watchProgress?.timestamp ? `?progress=${Math.floor(watchProgress.timestamp)}` : "";
-      playerUrl = `https://player.videasy.net/movie/${id}${startTime}&color=8B5CF6&overlay=true`;
-    } else if (type === "tv" && tvDetails) {
-      const startTime = watchProgress?.timestamp ? `?progress=${Math.floor(watchProgress.timestamp)}&` : "?";
-      playerUrl = `https://player.videasy.net/tv/${id}/${selectedSeason}/${selectedEpisode}${startTime}nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&color=8B5CF6&overlay=true`;
-    }
-  } else if (player === "vidluna") {
-    if (type === "movie") {
-      playerUrl = `https://vidluna.fun/embed/movie/${id}?color=8B5CF6&autoplay=false&muted=false`;
-    } else if (type === "tv") {
-      playerUrl = `https://vidluna.fun/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false`;
-    }
-  } else if (player === "vidora") {
-    if (type === "movie") {
-      playerUrl = `https://vidora.su/movie/${id}?autoplay=true&colour=8B5CF6`;
-    } else if (type === "tv") {
-      playerUrl = `https://vidora.su/tv/${id}/${selectedSeason}/${selectedEpisode}?autoplay=true&colour=8B5CF6&autonextepisode=true`;
-    }
-  }
 
   if (loading) {
     return (
@@ -237,10 +249,21 @@ export default function WatchPage() {
               key={type === "tv" ? `${player}-tv-${id}-${selectedSeason}-${selectedEpisode}` : `${player}-movie-${id}`}
               src={playerUrl}
               className="absolute top-0 left-0 w-full h-full"
+              title={`${title} - Video Player`}
               frameBorder="0"
               allowFullScreen
-              allow="autoplay; fullscreen; encrypted-media"
+              allow="autoplay; fullscreen; encrypted-media; picture-in-picture; accelerometer; gyroscope"
+              sandbox="allow-same-origin allow-scripts allow-presentation allow-forms"
+              loading="eager"
               onLoad={() => setPlayerLoading(false)}
+              onError={() => {
+                setPlayerLoading(false);
+                console.error("Video player failed to load");
+              }}
+              style={{
+                WebkitBackfaceVisibility: "hidden",
+                WebkitTransform: "translate3d(0, 0, 0)",
+              }}
             />
             {/* Watermark Overlay */}
             {watermarkEnabled && (

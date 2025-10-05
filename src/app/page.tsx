@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,11 +61,13 @@ export default function HomePage() {
         console.error("Search failed:", error);
       }
     }
-    const debounce = setTimeout(performSearch, 300);
+    const debounce = setTimeout(performSearch, 500);
     return () => clearTimeout(debounce);
   }, [query]);
 
-  const displayContent = query.trim() ? searchResults : activeTab === "all" ? trending : activeTab === "movie" ? movies : tvShows;
+  const displayContent = useMemo(() => {
+    return query.trim() ? searchResults : activeTab === "all" ? trending : activeTab === "movie" ? movies : tvShows;
+  }, [query, searchResults, activeTab, trending, movies, tvShows]);
 
   return (
     <div className="min-h-screen bg-[radial-gradient(1200px_600px_at_20%_-10%,rgba(124,58,237,0.25),transparent),radial-gradient(1200px_600px_at_80%_10%,rgba(59,130,246,0.2),transparent)]">
@@ -78,6 +80,7 @@ export default function HomePage() {
                 src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
                 alt="KiraStreams Logo"
                 fill
+                sizes="32px"
                 className="object-cover"
               />
             </div>
@@ -120,7 +123,7 @@ export default function HomePage() {
       </header>
 
       {/* Hero Carousel */}
-      {!query.trim() && (
+      {!query.trim() && trending.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
           <Carousel className="w-full">
             <CarouselContent>
@@ -135,14 +138,16 @@ export default function HomePage() {
                         alt={title}
                         fill
                         priority
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
                         className="object-cover opacity-80"
+                        quality={85}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10">
                         <motion.h2
                           initial={{ y: 20, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
-                          transition={{ duration: 0.6 }}
+                          transition={{ duration: 0.4, ease: "easeOut" }}
                           className="text-2xl sm:text-4xl lg:text-5xl font-bold"
                         >
                           {title}
@@ -221,16 +226,24 @@ export default function HomePage() {
             const year = item.release_date?.split("-")[0] || item.first_air_date?.split("-")[0] || "N/A";
             
             return (
-              <motion.div key={`${mediaType}-${item.id}`} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <motion.div 
+                key={`${mediaType}-${item.id}`} 
+                initial={{ opacity: 0, y: 10 }} 
+                whileInView={{ opacity: 1, y: 0 }} 
+                viewport={{ once: true, margin: "100px" }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              >
                 <Link href={`/watch/${mediaType}/${item.id}`} className="group block">
                   <div className="relative aspect-[2/3] overflow-hidden rounded-lg border border-border/40">
                     <Image
                       src={getImageUrl(item.poster_path, "w500")}
                       alt={title}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
                     />
-                    <div className="absolute inset-0 ring-1 ring-inset ring-violet-500/0 group-hover:ring-violet-500/40 transition-all" />
+                    <div className="absolute inset-0 ring-1 ring-inset ring-violet-500/0 group-hover:ring-violet-500/40 transition-all duration-300" />
                     <div className="absolute top-2 right-2 px-2 py-1 rounded text-xs bg-black/70 backdrop-blur">
                       ⭐ {item.vote_average.toFixed(1)}
                     </div>

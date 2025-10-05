@@ -56,6 +56,7 @@ export default function MoviesPage() {
                 src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
                 alt="KiraStreams Logo"
                 fill
+                sizes="32px"
                 className="object-cover"
               />
             </div>
@@ -132,7 +133,8 @@ export default function MoviesPage() {
               key={movie.id}
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "100px" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             >
               <Link href={`/watch/movie/${movie.id}`} className="group block">
                 <div className="relative aspect-[2/3] overflow-hidden rounded-lg border border-border/40">
@@ -140,9 +142,11 @@ export default function MoviesPage() {
                     src={getImageUrl(movie.poster_path, "w500")}
                     alt={movie.title || "Movie"}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
                   />
-                  <div className="absolute inset-0 ring-1 ring-inset ring-violet-500/0 group-hover:ring-violet-500/40 transition-all" />
+                  <div className="absolute inset-0 ring-1 ring-inset ring-violet-500/0 group-hover:ring-violet-500/40 transition-all duration-300" />
                   <div className="absolute top-2 right-2 px-2 py-1 rounded text-xs bg-black/70 backdrop-blur">
                     ⭐ {movie.vote_average.toFixed(1)}
                   </div>

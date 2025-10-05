@@ -1,3 +1,21 @@
+/* Updated: 2025-10-05T06:14:55.148Z */
+/* Updated: 2025-10-04T03:48:26.671Z */
+/* Updated: 2025-10-04T03:19:07.491Z */
+/* Updated: 2025-10-03T14:59:45.860Z */
+/* Updated: 2025-10-03T04:27:25.652Z */
+/* Updated: 2025-10-02T17:11:37.040Z */
+/* Updated: 2025-10-02T14:55:56.475Z */
+/* Updated: 2025-10-02T14:46:07.612Z */
+/* Updated: 2025-10-02T05:03:02.589Z */
+/* Updated: 2025-10-02T04:45:41.453Z */
+/* Updated: 2025-10-02T04:28:06.173Z */
+/* Updated: 2025-10-02T04:09:58.364Z */
+/* Updated: 2025-10-01T15:28:12.504Z */
+/* Updated: 2025-10-01T15:13:51.413Z */
+/* Updated: 2025-10-01T11:37:42.030Z */
+/* Updated: 2025-10-01T11:37:09.893Z */
+/* Updated: 2025-10-01T10:15:54.505Z */
+/* Updated: 2025-10-01T09:15:12.246Z */
 /* Updated: 2025-10-01T05:46:40.985Z */
 /* Updated: 2025-09-30T17:59:15.406Z */
 /* Updated: 2025-09-30T17:50:40.962Z */
@@ -23,6 +41,7 @@
 /* Updated: 2025-09-28T09:24:38.362Z */
 /* Updated: 2025-09-28T09:22:54.157Z */
 /* Updated: 2025-09-28T09:10:33.499Z */
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -143,6 +162,41 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+  }
+  
+  /* iOS/Safari optimizations */
+  @supports (-webkit-touch-callout: none) {
+    body {
+      /* Prevent iOS Safari pull-to-refresh bounce */
+      overscroll-behavior-y: none;
+    }
+  }
+  
+  /* Safe area support for notched devices */
+  @supports (padding: max(0px)) {
+    body {
+      padding-left: max(0px, env(safe-area-inset-left));
+      padding-right: max(0px, env(safe-area-inset-right));
+    }
+  }
+  
+  /* Hardware acceleration for animations */
+  [class*="motion"],
+  [class*="animate"],
+  [data-motion] {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  /* Optimize iframe rendering */
+  iframe {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
