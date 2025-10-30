@@ -218,10 +218,10 @@ export default function WatchPage() {
                   <span>Vidfast (Primary)</span>
                 </div>
               </SelectItem>
-              <SelectItem value="vidluna">
+              <SelectItem value="vidzy">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-fuchsia-500" />
-                  <span>Vidluna</span>
+                  <span>Vidzy</span>
                 </div>
               </SelectItem>
               <SelectItem value="vidora">
