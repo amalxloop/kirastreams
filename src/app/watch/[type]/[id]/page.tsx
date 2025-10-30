@@ -50,10 +50,10 @@ export default function WatchPage() {
       if (type === "movie") {
         const startTime = watchProgress?.timestamp ? `?progress=${Math.floor(watchProgress.timestamp)}` : "";
         const separator = startTime ? "&" : "?";
-        url = `https://player.vidfast.pro/movie/${id}${startTime}${separator}color=8B5CF6&overlay=true`;
+        url = `https://vidfast.pro/movie/${id}${startTime}${separator}color=8B5CF6&overlay=true`;
       } else if (type === "tv" && tvDetails) {
         const startTime = watchProgress?.timestamp ? `?progress=${Math.floor(watchProgress.timestamp)}&` : "?";
-        url = `https://player.vidfast.pro/tv/${id}/${selectedSeason}/${selectedEpisode}${startTime}nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&color=8B5CF6&overlay=true`;
+        url = `https://vidfast.pro/tv/${id}/${selectedSeason}/${selectedEpisode}${startTime}nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&color=8B5CF6&overlay=true`;
       }
     } else if (player === "vidluna") {
       if (type === "movie") {
