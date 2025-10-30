@@ -40,7 +40,7 @@ export default function WatchPage() {
   const [loading, setLoading] = useState(true);
   const [playerLoading, setPlayerLoading] = useState(true);
   const [watchProgress, setWatchProgress] = useState<any>(null);
-  const [player, setPlayer] = useState<PlayerType>("videasy");
+  const [player, setPlayer] = useState<PlayerType>("vidfast");
   const [watermarkEnabled, setWatermarkEnabled] = useState(true);
 
   // Memoize player URL to prevent unnecessary recalculations
