@@ -23,7 +23,7 @@ import {
   TMDBMovie,
 } from "@/lib/tmdb";
 
-type PlayerType = "videasy" | "vidluna" | "vidora";
+type PlayerType = "vidfast" | "vidluna" | "vidora";
 
 export default function WatchPage() {
   const params = useParams();
