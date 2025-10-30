@@ -55,11 +55,11 @@ export default function WatchPage() {
         const startTime = watchProgress?.timestamp ? `?progress=${Math.floor(watchProgress.timestamp)}&` : "?";
         url = `https://vidfast.pro/tv/${id}/${selectedSeason}/${selectedEpisode}${startTime}nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&color=8B5CF6&overlay=true`;
       }
-    } else if (player === "vidluna") {
+    } else if (player === "vidzy") {
       if (type === "movie") {
-        url = `https://vidluna.fun/embed/movie/${id}?color=8B5CF6&autoplay=false&muted=false`;
+        url = `https://vidzy.luna.tattoo/embed/movie/${id}?color=8B5CF6&autoplay=false&muted=false`;
       } else if (type === "tv") {
-        url = `https://vidluna.fun/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false`;
+        url = `https://vidzy.luna.tattoo/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false`;
       }
     } else if (player === "vidora") {
       if (type === "movie") {
