@@ -215,7 +215,7 @@ export default function WatchPage() {
               <SelectItem value="vidfast">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-violet-500" />
-                  <span>Videasy (Primary)</span>
+                  <span>Vidfast (Primary)</span>
                 </div>
               </SelectItem>
               <SelectItem value="vidluna">
@@ -451,7 +451,7 @@ export default function WatchPage() {
       {/* Footer */}
       <footer className="border-t border-border/40 py-10 mt-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} KiraStreams • Powered by TMDB & Videasy</p>
+          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} KiraStreams • Powered by TMDB & Vidfast</p>
         </div>
       </footer>
     </div>
