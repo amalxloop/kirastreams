@@ -46,14 +46,14 @@ export default function WatchPage() {
   // Memoize player URL to prevent unnecessary recalculations
   const playerUrl = useMemo(() => {
     let url = "";
-    if (player === "videasy") {
+    if (player === "vidfast") {
       if (type === "movie") {
         const startTime = watchProgress?.timestamp ? `?progress=${Math.floor(watchProgress.timestamp)}` : "";
         const separator = startTime ? "&" : "?";
-        url = `https://player.videasy.net/movie/${id}${startTime}${separator}color=8B5CF6&overlay=true`;
+        url = `https://player.vidfast.pro/movie/${id}${startTime}${separator}color=8B5CF6&overlay=true`;
       } else if (type === "tv" && tvDetails) {
         const startTime = watchProgress?.timestamp ? `?progress=${Math.floor(watchProgress.timestamp)}&` : "?";
-        url = `https://player.videasy.net/tv/${id}/${selectedSeason}/${selectedEpisode}${startTime}nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&color=8B5CF6&overlay=true`;
+        url = `https://player.vidfast.pro/tv/${id}/${selectedSeason}/${selectedEpisode}${startTime}nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&color=8B5CF6&overlay=true`;
       }
     } else if (player === "vidluna") {
       if (type === "movie") {
@@ -212,7 +212,7 @@ export default function WatchPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="videasy">
+              <SelectItem value="vidfast">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-violet-500" />
                   <span>Videasy (Primary)</span>
