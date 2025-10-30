@@ -6,7 +6,7 @@ import Script from "next/script";
 import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
-  title: "KiraStreams — Futuristic Streaming",
+  title: "KiraStreams",
   description: "Watch movies and series with a sleek, cinematic experience.",
   icons: {
     icon: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-favicon%2c--ecf4125d-20251001055539.jpg?",
