@@ -23,7 +23,7 @@ import {
   TMDBMovie,
 } from "@/lib/tmdb";
 
-type PlayerType = "vidfast" | "vidluna" | "vidora";
+type PlayerType = "vidfast" | "vidluna" | "vidora" | "player4u";
 
 export default function WatchPage() {
   const params = useParams();
@@ -66,6 +66,12 @@ export default function WatchPage() {
         url = `https://vidora.su/movie/${id}?autoplay=true&colour=8B5CF6`;
       } else if (type === "tv") {
         url = `https://vidora.su/tv/${id}/${selectedSeason}/${selectedEpisode}?autoplay=true&colour=8B5CF6&autonextepisode=true`;
+      }
+    } else if (player === "player4u") {
+      if (type === "movie") {
+        url = `https://player4u.xyz/embed/movie/${id}?color=8B5CF6&autoplay=false&muted=false`;
+      } else if (type === "tv") {
+        url = `https://player4u.xyz/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false`;
       }
     }
     return url;
@@ -228,6 +234,12 @@ export default function WatchPage() {
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-sky-500" />
                   <span>Vidora</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="player4u">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-amber-500" />
+                  <span>Player4u</span>
                 </div>
               </SelectItem>
             </SelectContent>
