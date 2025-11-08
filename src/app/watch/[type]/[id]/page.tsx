@@ -61,7 +61,7 @@ export default function WatchPage() {
       } else if (type === "tv") {
         url = `https://vidzy.luna.tattoo/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false`;
       }
-    } else if (player === "player4u") {
+    } else if (player === "2embed") {
       if (type === "movie") {
         url = `https://www.2embed.cc/embed/${id}`;
       } else if (type === "tv") {
