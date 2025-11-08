@@ -23,7 +23,7 @@ import {
   TMDBMovie,
 } from "@/lib/tmdb";
 
-type PlayerType = "vidfast" | "vidzy" | "vidora" | "player4u";
+type PlayerType = "vidfast" | "vidzy" | "player4u";
 
 export default function WatchPage() {
   const params = useParams();
@@ -61,17 +61,11 @@ export default function WatchPage() {
       } else if (type === "tv") {
         url = `https://vidzy.luna.tattoo/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false`;
       }
-    } else if (player === "vidora") {
-      if (type === "movie") {
-        url = `https://vidora.su/movie/${id}?autoplay=true&colour=8B5CF6`;
-      } else if (type === "tv") {
-        url = `https://vidora.su/tv/${id}/${selectedSeason}/${selectedEpisode}?autoplay=true&colour=8B5CF6&autonextepisode=true`;
-      }
     } else if (player === "player4u") {
       if (type === "movie") {
-        url = `https://player4u.xyz/embed?key=${id}`;
+        url = `https://www.2embed.cc/embed/${id}`;
       } else if (type === "tv") {
-        url = `https://player4u.xyz/embed?key=${id}-${selectedSeason}-${selectedEpisode}`;
+        url = `https://www.2embed.cc/embedtv/${id}&s=${selectedSeason}&e=${selectedEpisode}`;
       }
     }
     return url;
@@ -228,12 +222,6 @@ export default function WatchPage() {
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-fuchsia-500" />
                   <span>Vidzy</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="vidora">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-sky-500" />
-                  <span>Vidora</span>
                 </div>
               </SelectItem>
               <SelectItem value="player4u">
