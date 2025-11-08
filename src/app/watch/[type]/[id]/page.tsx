@@ -23,7 +23,7 @@ import {
   TMDBMovie,
 } from "@/lib/tmdb";
 
-type PlayerType = "vidfast" | "vidzy" | "player4u";
+type PlayerType = "vidfast" | "vidzy" | "2embed";
 
 export default function WatchPage() {
   const params = useParams();
@@ -41,7 +41,6 @@ export default function WatchPage() {
   const [playerLoading, setPlayerLoading] = useState(true);
   const [watchProgress, setWatchProgress] = useState<any>(null);
   const [player, setPlayer] = useState<PlayerType>("vidfast");
-  const [watermarkEnabled, setWatermarkEnabled] = useState(true);
 
   // Memoize player URL to prevent unnecessary recalculations
   const playerUrl = useMemo(() => {
@@ -224,10 +223,10 @@ export default function WatchPage() {
                   <span>Vidzy</span>
                 </div>
               </SelectItem>
-              <SelectItem value="player4u">
+              <SelectItem value="2embed">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-emerald-500" />
-                  <span>Player4u</span>
+                  <span>2Embed</span>
                 </div>
               </SelectItem>
             </SelectContent>
@@ -264,22 +263,6 @@ export default function WatchPage() {
                 WebkitTransform: "translate3d(0, 0, 0)",
               }}
             />
-            {/* Watermark Overlay */}
-            {watermarkEnabled && (
-              <div className="absolute bottom-4 right-4 z-10 pointer-events-none">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-black/5 backdrop-blur-md rounded-lg border border-white/5 shadow-lg">
-                  <div className="relative h-5 w-5 rounded overflow-hidden">
-                    <Image
-                      src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
-                      alt="KiraStreams"
-                      fill
-                      className="object-cover opacity-25"
-                    />
-                  </div>
-                  <span className="text-xs font-medium text-white/30 tracking-wide">KiraStreams</span>
-                </div>
-              </div>
-            )}
           </div>
         </Card>
 
