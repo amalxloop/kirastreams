@@ -69,9 +69,9 @@ export default function WatchPage() {
       }
     } else if (player === "player4u") {
       if (type === "movie") {
-        url = `https://player4u.xyz/embed/movie/${id}?color=8B5CF6&autoplay=false&muted=false&search=0`;
+        url = `https://player4u.xyz/embed/movie/${id}?color=8B5CF6&autoplay=false&muted=false&search=false&ui=minimal`;
       } else if (type === "tv") {
-        url = `https://player4u.xyz/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false&search=0`;
+        url = `https://player4u.xyz/embed/tv/${id}/${selectedSeason}/${selectedEpisode}?color=8B5CF6&autoplay=false&muted=false&search=false&ui=minimal`;
       }
     }
     return url;
