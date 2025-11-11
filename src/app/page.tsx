@@ -146,7 +146,7 @@ export default function HomePage() {
 
         {/* Hero Carousel */}
         {!query.trim() && trending.length > 0 && (
-          <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10" aria-label="Featured trending content">
+          <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20 pb-6 sm:pb-10" aria-label="Featured trending content">
             <Carousel className="w-full">
               <CarouselContent>
                 {trending.slice(0, 5).map((item) => {
@@ -202,7 +202,7 @@ export default function HomePage() {
         )}
 
         {/* Search Bar */}
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4 pt-6" aria-label="Search movies and TV shows">
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4 pt-20" aria-label="Search movies and TV shows">
           <Card className="bg-background/70 backdrop-blur border border-border/50">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2">
