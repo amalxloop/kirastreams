@@ -202,7 +202,7 @@ export default function HomePage() {
         )}
 
         {/* Search Bar */}
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4" aria-label="Search movies and TV shows">
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4 pt-6" aria-label="Search movies and TV shows">
           <Card className="bg-background/70 backdrop-blur border border-border/50">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2">
