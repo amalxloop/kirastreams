@@ -22,6 +22,10 @@ import {
   TMDBSeason,
   TMDBMovie,
 } from "@/lib/tmdb";
+import { saveWatchProgress, WatchProgress } from "@/lib/watch-progress";
+import { addToWatchHistory } from "@/lib/recommendations";
+import { BookmarkButton } from "@/components/BookmarkButton";
+import { Bookmark } from "@/lib/bookmarks";
 
 type PlayerType = "vidfast" | "vidzy" | "2embed";
 
@@ -78,11 +82,31 @@ export default function WatchPage() {
         if (type === "movie") {
           const details = await getMovieDetails(id);
           setMovieDetails(details);
+          
+          // Add to watch history
+          addToWatchHistory({
+            id,
+            type: "movie",
+            title: details.title,
+            genre_ids: details.genres.map(g => g.id),
+            timestamp: Date.now(),
+          });
+          
           const recs = await getPopular("movie");
           setRecommendations(recs.slice(0, 6));
         } else if (type === "tv") {
           const details = await getTVDetails(id);
           setTVDetails(details);
+          
+          // Add to watch history
+          addToWatchHistory({
+            id,
+            type: "tv",
+            title: details.name,
+            genre_ids: details.genres.map(g => g.id),
+            timestamp: Date.now(),
+          });
+          
           const recs = await getPopular("tv");
           setRecommendations(recs.slice(0, 6));
         }
@@ -129,9 +153,30 @@ export default function WatchPage() {
         const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
         if (data.progress !== undefined) {
           setWatchProgress(data);
-          // Save to localStorage
-          const key = type === "movie" ? `movie-${id}` : `tv-${id}-${selectedSeason}-${selectedEpisode}`;
-          localStorage.setItem(`watch-progress-${key}`, JSON.stringify(data));
+          
+          // Save watch progress
+          const details = type === "movie" ? movieDetails : tvDetails;
+          if (details) {
+            const progress: WatchProgress = {
+              id,
+              type,
+              title: type === "movie" ? (movieDetails?.title || "") : (tvDetails?.name || ""),
+              poster_path: details.poster_path,
+              backdrop_path: details.backdrop_path,
+              timestamp: data.timestamp || data.progress,
+              duration: data.duration || 1,
+              progress: Math.round(((data.timestamp || data.progress) / (data.duration || 1)) * 100),
+              lastWatched: Date.now(),
+            };
+            
+            if (type === "tv") {
+              progress.seasonNumber = selectedSeason;
+              progress.episodeNumber = selectedEpisode;
+              progress.episodeName = seasonData?.episodes[selectedEpisode - 1]?.name;
+            }
+            
+            saveWatchProgress(progress);
+          }
         }
       } catch (error) {
         // Ignore parse errors
@@ -139,7 +184,7 @@ export default function WatchPage() {
     }
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [type, id, selectedSeason, selectedEpisode]);
+  }, [type, id, selectedSeason, selectedEpisode, movieDetails, tvDetails, seasonData]);
 
   // Load saved progress
   useEffect(() => {
@@ -160,6 +205,21 @@ export default function WatchPage() {
   const rating = details?.vote_average || 0;
   const cast = details?.credits?.cast.slice(0, 6) || [];
   const genres = details?.genres || [];
+
+  // Create bookmark object
+  const bookmarkData: Bookmark | null = details ? {
+    id,
+    type,
+    title,
+    poster_path: details.poster_path,
+    backdrop_path: details.backdrop_path,
+    overview,
+    vote_average: rating,
+    release_date: type === "movie" ? movieDetails?.release_date : undefined,
+    first_air_date: type === "tv" ? tvDetails?.first_air_date : undefined,
+    genre_ids: genres.map(g => g.id),
+    addedAt: Date.now(),
+  } : null;
 
   if (loading) {
     return (
@@ -329,7 +389,10 @@ export default function WatchPage() {
           {/* Main Info */}
           <div className="lg:col-span-2">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <h1 className="text-3xl sm:text-4xl font-bold mb-4">{title}</h1>
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <h1 className="text-3xl sm:text-4xl font-bold">{title}</h1>
+                {bookmarkData && <BookmarkButton content={bookmarkData} variant="outline" size="default" />}
+              </div>
               <div className="flex flex-wrap items-center gap-3 mb-6 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />

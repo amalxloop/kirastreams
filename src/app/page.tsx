@@ -15,6 +15,9 @@ import { LogIn, Search, UserPlus, Film, Tv, TrendingUp, Sparkles } from "lucide-
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { getTrending, getPopular, TMDBMovie, getImageUrl, getAnime } from "@/lib/tmdb";
+import { ContinueWatching } from "@/components/ContinueWatching";
+import { SearchAutocomplete } from "@/components/SearchAutocomplete";
+import { RecommendationsSection } from "@/components/RecommendationsSection";
 
 export default function HomePage() {
   const { user, logout } = useAuth();
@@ -201,23 +204,16 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* Search Bar */}
+        {/* Search Bar with Autocomplete */}
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4 pt-20" aria-label="Search movies and TV shows">
-          <Card className="bg-background/70 backdrop-blur border border-border/50">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2">
-                <Search className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                <Input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search free movies, TV shows, anime..."
-                  className="bg-background/60"
-                  aria-label="Search for movies and TV shows"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <SearchAutocomplete onSearch={setQuery} />
         </section>
+
+        {/* Continue Watching Section */}
+        {!query.trim() && <ContinueWatching />}
+
+        {/* Smart Recommendations */}
+        {!query.trim() && <RecommendationsSection />}
 
         {/* Tabs & Content Grid */}
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8" aria-label="Browse content">
