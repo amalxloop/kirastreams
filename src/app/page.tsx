@@ -11,18 +11,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogIn, Search, UserPlus, Film, Tv, TrendingUp } from "lucide-react";
+import { LogIn, Search, UserPlus, Film, Tv, TrendingUp, Sparkles } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { getTrending, getPopular, TMDBMovie, getImageUrl } from "@/lib/tmdb";
+import { getTrending, getPopular, TMDBMovie, getImageUrl, getAnime } from "@/lib/tmdb";
 
 export default function HomePage() {
   const { user, logout } = useAuth();
   const [query, setQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"all" | "movie" | "tv">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "movie" | "tv" | "anime">("all");
   const [trending, setTrending] = useState<TMDBMovie[]>([]);
   const [movies, setMovies] = useState<TMDBMovie[]>([]);
   const [tvShows, setTVShows] = useState<TMDBMovie[]>([]);
+  const [anime, setAnime] = useState<TMDBMovie[]>([]);
   const [searchResults, setSearchResults] = useState<TMDBMovie[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,14 +31,16 @@ export default function HomePage() {
     async function fetchContent() {
       setLoading(true);
       try {
-        const [trendingData, moviesData, tvData] = await Promise.all([
+        const [trendingData, moviesData, tvData, animeData] = await Promise.all([
           getTrending("all", "week"),
           getPopular("movie"),
           getPopular("tv"),
+          getAnime(),
         ]);
         setTrending(trendingData.slice(0, 10));
         setMovies(moviesData);
         setTVShows(tvData);
+        setAnime(animeData);
       } catch (error) {
         console.error("Failed to fetch TMDB data:", error);
       } finally {
@@ -66,8 +69,8 @@ export default function HomePage() {
   }, [query]);
 
   const displayContent = useMemo(() => {
-    return query.trim() ? searchResults : activeTab === "all" ? trending : activeTab === "movie" ? movies : tvShows;
-  }, [query, searchResults, activeTab, trending, movies, tvShows]);
+    return query.trim() ? searchResults : activeTab === "all" ? trending : activeTab === "movie" ? movies : activeTab === "tv" ? tvShows : anime;
+  }, [query, searchResults, activeTab, trending, movies, tvShows, anime]);
 
   return (
     <>
@@ -108,6 +111,9 @@ export default function HomePage() {
               </Link>
               <Link href="/tv" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 TV Shows
+              </Link>
+              <Link href="/#anime" onClick={(e) => { e.preventDefault(); setActiveTab("anime"); }} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Anime
               </Link>
             </nav>
             <div className="flex items-center gap-2">
@@ -204,7 +210,7 @@ export default function HomePage() {
                 <Input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search free movies, TV shows..."
+                  placeholder="Search free movies, TV shows, anime..."
                   className="bg-background/60"
                   aria-label="Search for movies and TV shows"
                 />
@@ -221,9 +227,10 @@ export default function HomePage() {
                 {activeTab === "all" && "Trending This Week"}
                 {activeTab === "movie" && "Popular Movies"}
                 {activeTab === "tv" && "Popular TV Shows"}
+                {activeTab === "anime" && "Popular Anime"}
               </h2>
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="mb-6">
-                <TabsList className="grid w-full max-w-md grid-cols-3">
+                <TabsList className="grid w-full max-w-2xl grid-cols-4">
                   <TabsTrigger value="all" className="flex items-center gap-2">
                     <TrendingUp className="h-4 w-4" aria-hidden="true" />
                     Trending
@@ -235,6 +242,10 @@ export default function HomePage() {
                   <TabsTrigger value="tv" className="flex items-center gap-2">
                     <Tv className="h-4 w-4" aria-hidden="true" />
                     TV Shows
+                  </TabsTrigger>
+                  <TabsTrigger value="anime" className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" aria-hidden="true" />
+                    Anime
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -252,7 +263,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {displayContent.map((item) => {
               const title = item.title || item.name || "Unknown";
-              const mediaType = item.media_type || (activeTab === "tv" ? "tv" : "movie");
+              const mediaType = item.media_type || (activeTab === "tv" || activeTab === "anime" ? "tv" : "movie");
               const year = item.release_date?.split("-")[0] || item.first_air_date?.split("-")[0] || "N/A";
               
               return (
@@ -282,7 +293,7 @@ export default function HomePage() {
                       <p className="text-sm font-medium line-clamp-1">{title}</p>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span>{year}</span>
-                        <span className="capitalize">{mediaType}</span>
+                        <span className="capitalize">{activeTab === "anime" ? "anime" : mediaType}</span>
                       </div>
                     </div>
                   </Link>

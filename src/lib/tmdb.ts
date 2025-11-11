@@ -160,6 +160,16 @@ export async function getTVByGenre(genreId: number, page = 1) {
   return data.results as TMDBMovie[];
 }
 
+export async function getAnime(page = 1) {
+  const data = await tmdbFetch("/discover/tv", {
+    with_genres: "16", // Animation
+    with_original_language: "ja", // Japanese
+    page: String(page),
+    sort_by: "popularity.desc",
+  });
+  return data.results as TMDBMovie[];
+}
+
 export function getImageUrl(path: string | null, size: "w185" | "w342" | "w500" | "w780" | "original" = "w500"): string {
   if (!path) return "https://images.unsplash.com/photo-1542626991-cbc4e32524cc?q=80&w=500&auto=format&fit=crop";
   return `${TMDB_IMAGE_BASE}/${size}${path}`;
