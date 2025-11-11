@@ -26,6 +26,7 @@ import { saveWatchProgress, WatchProgress } from "@/lib/watch-progress";
 import { addToWatchHistory } from "@/lib/recommendations";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { Bookmark } from "@/lib/bookmarks";
+import { EpisodeThumbnails } from "@/components/EpisodeThumbnails";
 
 type PlayerType = "vidfast" | "vidzy" | "2embed";
 
@@ -330,7 +331,7 @@ export default function WatchPage() {
         {type === "tv" && tvDetails && seasonData && (
           <Card className="mt-4 bg-background/70 backdrop-blur border border-border/50">
             <CardContent className="pt-6">
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
                 <div className="flex-1">
                   <label className="text-sm text-muted-foreground mb-2 block">Season</label>
                   <Select
@@ -371,13 +372,12 @@ export default function WatchPage() {
                 </div>
               </div>
 
-              {/* Current Episode Info */}
-              {seasonData.episodes[selectedEpisode - 1] && (
-                <div className="mt-4 pt-4 border-t border-border/40">
-                  <h3 className="font-semibold mb-2">{seasonData.episodes[selectedEpisode - 1].name}</h3>
-                  <p className="text-sm text-muted-foreground">{seasonData.episodes[selectedEpisode - 1].overview}</p>
-                </div>
-              )}
+              {/* Episode Thumbnails */}
+              <EpisodeThumbnails
+                seasonData={seasonData}
+                selectedEpisode={selectedEpisode}
+                onEpisodeSelect={setSelectedEpisode}
+              />
             </CardContent>
           </Card>
         )}
@@ -477,14 +477,13 @@ export default function WatchPage() {
                 viewport={{ once: true }}
               >
                 <Link href={`/watch/${recType}/${item.id}`} className="group block">
-                  <div className="relative aspect-[2/3] overflow-hidden rounded-lg border border-border/40">
+                  <div className="relative aspect-[2/3] overflow-hidden rounded-lg border border-border/40 card-hover-glow">
                     <Image
                       src={getImageUrl(item.poster_path, "w342")}
                       alt={recTitle}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-cover parallax-scale"
                     />
-                    <div className="absolute inset-0 ring-1 ring-inset ring-violet-500/0 group-hover:ring-violet-500/40 transition-all" />
                   </div>
                   <p className="mt-2 text-sm font-medium line-clamp-2">{recTitle}</p>
                 </Link>

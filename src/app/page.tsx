@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { LogIn, Search, UserPlus, Film, Tv, TrendingUp, Sparkles } from "lucide-react";
@@ -18,6 +17,8 @@ import { getTrending, getPopular, TMDBMovie, getImageUrl, getAnime } from "@/lib
 import { ContinueWatching } from "@/components/ContinueWatching";
 import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { RecommendationsSection } from "@/components/RecommendationsSection";
+import { DynamicHeroBanner } from "@/components/DynamicHeroBanner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function HomePage() {
   const { user, logout } = useAuth();
@@ -120,6 +121,7 @@ export default function HomePage() {
               </Link>
             </nav>
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               {!user ? (
                 <AuthButtons />
               ) : (
@@ -147,61 +149,9 @@ export default function HomePage() {
           </div>
         </header>
 
-        {/* Hero Carousel */}
+        {/* Dynamic Hero Banner with Auto-scroll */}
         {!query.trim() && trending.length > 0 && (
-          <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20 pb-6 sm:pb-10" aria-label="Featured trending content">
-            <Carousel className="w-full">
-              <CarouselContent>
-                {trending.slice(0, 5).map((item) => {
-                  const title = item.title || item.name || "Unknown";
-                  const mediaType = item.media_type || "movie";
-                  return (
-                    <CarouselItem key={item.id} className="basis-full">
-                      <article className="relative h-[44vh] sm:h-[56vh] lg:h-[68vh] overflow-hidden rounded-xl">
-                        <Image
-                          src={getImageUrl(item.backdrop_path, "original")}
-                          alt={`${title} - Watch free online on KiraStreams`}
-                          fill
-                          priority
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
-                          className="object-cover opacity-80"
-                          quality={85}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent" />
-                        <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10">
-                          <motion.h2
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ duration: 0.4, ease: "easeOut" }}
-                            className="text-2xl sm:text-4xl lg:text-5xl font-bold"
-                          >
-                            {title}
-                          </motion.h2>
-                          <p className="mt-2 max-w-2xl text-sm/relaxed sm:text-base/relaxed text-muted-foreground line-clamp-3">
-                            {item.overview}
-                          </p>
-                          <div className="mt-4 flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                            <span className="px-2 py-1 rounded bg-secondary/40 border border-border/40 capitalize">{mediaType}</span>
-                            <span>•</span>
-                            <span>{item.release_date?.split("-")[0] || item.first_air_date?.split("-")[0] || "N/A"}</span>
-                            <span>•</span>
-                            <span>⭐ {item.vote_average.toFixed(1)}</span>
-                          </div>
-                          <div className="mt-5 flex gap-3">
-                            <Button asChild className="bg-violet-600 hover:bg-violet-500 shadow-[0_0_18px_2px_rgba(139,92,246,0.45)]">
-                              <Link href={`/watch/${mediaType}/${item.id}`}>Watch now</Link>
-                            </Button>
-                          </div>
-                        </div>
-                      </article>
-                    </CarouselItem>
-                  );
-                })}
-              </CarouselContent>
-              <CarouselPrevious className="left-2" />
-              <CarouselNext className="right-2" />
-            </Carousel>
-          </section>
+          <DynamicHeroBanner items={trending.slice(0, 5)} autoScrollInterval={5000} />
         )}
 
         {/* Search Bar with Autocomplete */}
@@ -271,16 +221,15 @@ export default function HomePage() {
                   transition={{ duration: 0.3, ease: "easeOut" }}
                 >
                   <Link href={`/watch/${mediaType}/${item.id}`} className="group block">
-                    <article className="relative aspect-[2/3] overflow-hidden rounded-lg border border-border/40">
+                    <article className="relative aspect-[2/3] overflow-hidden rounded-lg border border-border/40 card-hover-glow">
                       <Image
                         src={getImageUrl(item.poster_path, "w500")}
                         alt={`Watch ${title} free online - ${mediaType} ${year}`}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="object-cover parallax-scale"
                         loading="lazy"
                       />
-                      <div className="absolute inset-0 ring-1 ring-inset ring-violet-500/0 group-hover:ring-violet-500/40 transition-all duration-300" />
                       <div className="absolute top-2 right-2 px-2 py-1 rounded text-xs bg-black/70 backdrop-blur">
                         ⭐ {item.vote_average.toFixed(1)}
                       </div>
