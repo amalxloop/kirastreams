@@ -231,21 +231,21 @@ export default function HomePage() {
               </h2>
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="mb-6">
                 <TabsList className="grid w-full max-w-2xl grid-cols-4">
-                  <TabsTrigger value="all" className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" aria-hidden="true" />
-                    Trending
+                  <TabsTrigger value="all" className="flex items-center justify-center gap-1.5 px-1 sm:px-3 text-[11px] sm:text-sm">
+                    <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 hidden sm:inline-block" aria-hidden="true" />
+                    <span>Trending</span>
                   </TabsTrigger>
-                  <TabsTrigger value="movie" className="flex items-center gap-2">
-                    <Film className="h-4 w-4" aria-hidden="true" />
-                    Movies
+                  <TabsTrigger value="movie" className="flex items-center justify-center gap-1.5 px-1 sm:px-3 text-[11px] sm:text-sm">
+                    <Film className="h-3 w-3 sm:h-4 sm:w-4 hidden sm:inline-block" aria-hidden="true" />
+                    <span>Movies</span>
                   </TabsTrigger>
-                  <TabsTrigger value="tv" className="flex items-center gap-2">
-                    <Tv className="h-4 w-4" aria-hidden="true" />
-                    TV Shows
+                  <TabsTrigger value="tv" className="flex items-center justify-center gap-1.5 px-1 sm:px-3 text-[11px] sm:text-sm">
+                    <Tv className="h-3 w-3 sm:h-4 sm:w-4 hidden sm:inline-block" aria-hidden="true" />
+                    <span>TV Shows</span>
                   </TabsTrigger>
-                  <TabsTrigger value="anime" className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4" aria-hidden="true" />
-                    Anime
+                  <TabsTrigger value="anime" className="flex items-center justify-center gap-1.5 px-1 sm:px-3 text-[11px] sm:text-sm">
+                    <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 hidden sm:inline-block" aria-hidden="true" />
+                    <span>Anime</span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
