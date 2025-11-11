@@ -216,22 +216,35 @@ export default function HomePage() {
         {/* Tabs & Content Grid */}
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8" aria-label="Browse content">
           {!query.trim() && (
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="mb-6">
-              <TabsList className="grid w-full max-w-md grid-cols-3">
-                <TabsTrigger value="all" className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4" aria-hidden="true" />
-                  Trending
-                </TabsTrigger>
-                <TabsTrigger value="movie" className="flex items-center gap-2">
-                  <Film className="h-4 w-4" aria-hidden="true" />
-                  Movies
-                </TabsTrigger>
-                <TabsTrigger value="tv" className="flex items-center gap-2">
-                  <Tv className="h-4 w-4" aria-hidden="true" />
-                  TV Shows
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-6">
+                {activeTab === "all" && "Trending This Week"}
+                {activeTab === "movie" && "Popular Movies"}
+                {activeTab === "tv" && "Popular TV Shows"}
+              </h2>
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="mb-6">
+                <TabsList className="grid w-full max-w-md grid-cols-3">
+                  <TabsTrigger value="all" className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" aria-hidden="true" />
+                    Trending
+                  </TabsTrigger>
+                  <TabsTrigger value="movie" className="flex items-center gap-2">
+                    <Film className="h-4 w-4" aria-hidden="true" />
+                    Movies
+                  </TabsTrigger>
+                  <TabsTrigger value="tv" className="flex items-center gap-2">
+                    <Tv className="h-4 w-4" aria-hidden="true" />
+                    TV Shows
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </>
+          )}
+
+          {query.trim() && (
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6">
+              Search Results for "{query}"
+            </h2>
           )}
 
           {loading && <p className="text-sm text-muted-foreground">Loading content...</p>}
