@@ -161,13 +161,35 @@ export async function getTVByGenre(genreId: number, page = 1) {
 }
 
 export async function getAnime(page = 1) {
-  const data = await tmdbFetch("/discover/tv", {
+  // Fetch trending anime first (combines popularity and recent activity)
+  const trendingData = await tmdbFetch("/trending/tv/week", {
+    page: String(page),
+  });
+  
+  // Filter for anime: Japanese animation
+  const trendingAnime = trendingData.results.filter((item: TMDBMovie) => 
+    item.genre_ids?.includes(16) // Animation genre
+  );
+  
+  // If we have enough trending anime, return them
+  if (trendingAnime.length >= 10) {
+    return trendingAnime as TMDBMovie[];
+  }
+  
+  // Otherwise, supplement with top-rated anime
+  const topRatedData = await tmdbFetch("/discover/tv", {
     with_genres: "16", // Animation
     with_original_language: "ja", // Japanese
     page: String(page),
-    sort_by: "popularity.desc",
+    sort_by: "vote_average.desc",
+    "vote_count.gte": "100", // Ensure quality ratings
   });
-  return data.results as TMDBMovie[];
+  
+  // Combine and deduplicate
+  const combined = [...trendingAnime, ...topRatedData.results];
+  const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
+  
+  return unique.slice(0, 20) as TMDBMovie[];
 }
 
 export function getImageUrl(path: string | null, size: "w185" | "w342" | "w500" | "w780" | "original" = "w500"): string {
