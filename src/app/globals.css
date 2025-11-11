@@ -1,3 +1,24 @@
+/* Updated: 2025-11-11T09:44:42.015Z */
+/* Updated: 2025-11-11T09:43:00.078Z */
+/* Updated: 2025-11-11T09:30:55.221Z */
+/* Updated: 2025-11-11T09:29:04.824Z */
+/* Updated: 2025-11-11T09:24:29.306Z */
+/* Updated: 2025-11-08T08:31:00.514Z */
+/* Updated: 2025-11-08T07:43:51.099Z */
+/* Updated: 2025-10-31T03:54:01.933Z */
+/* Updated: 2025-10-31T02:42:31.991Z */
+/* Updated: 2025-10-30T17:43:41.482Z */
+/* Updated: 2025-10-30T17:33:05.589Z */
+/* Updated: 2025-10-30T16:20:55.877Z */
+/* Updated: 2025-10-30T15:59:31.345Z */
+/* Updated: 2025-10-13T03:45:25.726Z */
+/* Updated: 2025-10-13T03:40:51.376Z */
+/* Updated: 2025-10-13T03:39:49.582Z */
+/* Updated: 2025-10-13T03:39:27.351Z */
+/* Updated: 2025-10-06T08:07:56.174Z */
+/* Updated: 2025-10-06T05:29:47.610Z */
+/* Updated: 2025-10-06T05:28:15.523Z */
+/* Updated: 2025-10-05T06:26:15.358Z */
 /* Updated: 2025-10-05T06:14:55.148Z */
 /* Updated: 2025-10-04T03:48:26.671Z */
 /* Updated: 2025-10-04T03:19:07.491Z */
@@ -165,6 +186,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   
   /* iOS/Safari optimizations */
@@ -172,6 +194,7 @@
     body {
       /* Prevent iOS Safari pull-to-refresh bounce */
       overscroll-behavior-y: none;
+      -webkit-overflow-scrolling: touch;
     }
   }
   
@@ -197,6 +220,84 @@
   iframe {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
+  }
+  
+  /* Mobile-specific optimizations */
+  @media (max-width: 768px) {
+    /* Improve tap targets for mobile */
+    button, a, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Optimize scroll performance */
+    * {
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+    
+    /* Prevent text size adjustment on orientation change */
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+    
+    /* Disable callouts on iOS */
+    a, button, img {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    
+    /* Allow text selection in inputs */
+    input, textarea {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+  }
+  
+  /* Android-specific optimizations */
+  @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
+    /* Reduce motion for better performance on lower-end Android devices */
+    @media (prefers-reduced-motion: no-preference) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  }
+  
+  /* Optimize images for mobile */
+  @media (max-width: 768px) {
+    img {
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+  }
+  
+  /* Fix iOS input zoom */
+  @supports (-webkit-touch-callout: none) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+  
+  /* Improve scroll performance on mobile */
+  .scrollable {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* Native-like momentum scrolling */
+  @supports (-webkit-overflow-scrolling: touch) {
+    .scrollable {
+      -webkit-overflow-scrolling: touch;
+    }
   }
 }
 
