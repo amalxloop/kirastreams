@@ -70,210 +70,228 @@ export default function HomePage() {
   }, [query, searchResults, activeTab, trending, movies, tvShows]);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(1200px_600px_at_20%_-10%,rgba(124,58,237,0.25),transparent),radial-gradient(1200px_600px_at_80%_10%,rgba(59,130,246,0.2),transparent)]">
-      {/* Nav */}
-      <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="relative h-8 w-8 rounded-md overflow-hidden shadow-[0_0_24px_2px_rgba(167,139,250,0.45)]">
-              <Image
-                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
-                alt="KiraStreams Logo"
-                fill
-                sizes="32px"
-                className="object-cover"
-              />
+    <>
+      {/* SEO-optimized hidden content for search engines */}
+      <div className="sr-only">
+        <h1>KiraStreams - Free Online Movies and TV Shows Streaming Website</h1>
+        <p>Watch free online movies and TV shows on KiraStreams, the best ad-free streaming platform. Stream unlimited HD movies and series without subscription. Enjoy free streaming of thousands of movies and TV shows online.</p>
+        <h2>Free Streaming Website Features</h2>
+        <ul>
+          <li>Ad-free streaming experience</li>
+          <li>Unlimited free online movies</li>
+          <li>HD quality TV shows streaming</li>
+          <li>No subscription required</li>
+          <li>Watch movies online free instantly</li>
+          <li>Free entertainment streaming platform</li>
+        </ul>
+      </div>
+      
+      <main className="min-h-screen bg-[radial-gradient(1200px_600px_at_20%_-10%,rgba(124,58,237,0.25),transparent),radial-gradient(1200px_600px_at_80%_10%,rgba(59,130,246,0.2),transparent)]">
+        {/* Nav */}
+        <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-3" aria-label="KiraStreams - Free Streaming Home">
+              <div className="relative h-8 w-8 rounded-md overflow-hidden shadow-[0_0_24px_2px_rgba(167,139,250,0.45)]">
+                <Image
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
+                  alt="KiraStreams Logo - Free Streaming Platform"
+                  fill
+                  sizes="32px"
+                  className="object-cover"
+                />
+              </div>
+              <span className="text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">KiraStreams</span>
+            </Link>
+            <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
+              <Link href="/movies" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Movies
+              </Link>
+              <Link href="/tv" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                TV Shows
+              </Link>
+            </nav>
+            <div className="flex items-center gap-2">
+              {!user ? (
+                <AuthButtons />
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="ml-2 h-8 w-8 ring-2 ring-violet-500/50 shadow-[0_0_12px_rgba(139,92,246,0.6)] cursor-pointer">
+                      <AvatarImage src={user.avatarUrl} />
+                      <AvatarFallback>{user.name?.slice(0,2).toUpperCase() || "KS"}</AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {user.role === "admin" && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin">Admin Panel</Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
-            <span className="text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">KiraStreams</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/movies" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Movies
-            </Link>
-            <Link href="/tv" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              TV Shows
-            </Link>
-          </nav>
-          <div className="flex items-center gap-2">
-            {!user ? (
-              <AuthButtons />
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Avatar className="ml-2 h-8 w-8 ring-2 ring-violet-500/50 shadow-[0_0_12px_rgba(139,92,246,0.6)] cursor-pointer">
-                    <AvatarImage src={user.avatarUrl} />
-                    <AvatarFallback>{user.name?.slice(0,2).toUpperCase() || "KS"}</AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {user.role === "admin" && (
-                    <DropdownMenuItem asChild>
-                      <Link href="/admin">Admin Panel</Link>
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Hero Carousel */}
-      {!query.trim() && trending.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
-          <Carousel className="w-full">
-            <CarouselContent>
-              {trending.slice(0, 5).map((item) => {
-                const title = item.title || item.name || "Unknown";
-                const mediaType = item.media_type || "movie";
-                return (
-                  <CarouselItem key={item.id} className="basis-full">
-                    <div className="relative h-[44vh] sm:h-[56vh] lg:h-[68vh] overflow-hidden rounded-xl">
+        {/* Hero Carousel */}
+        {!query.trim() && trending.length > 0 && (
+          <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10" aria-label="Featured trending content">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {trending.slice(0, 5).map((item) => {
+                  const title = item.title || item.name || "Unknown";
+                  const mediaType = item.media_type || "movie";
+                  return (
+                    <CarouselItem key={item.id} className="basis-full">
+                      <article className="relative h-[44vh] sm:h-[56vh] lg:h-[68vh] overflow-hidden rounded-xl">
+                        <Image
+                          src={getImageUrl(item.backdrop_path, "original")}
+                          alt={`${title} - Watch free online on KiraStreams`}
+                          fill
+                          priority
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
+                          className="object-cover opacity-80"
+                          quality={85}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10">
+                          <motion.h2
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
+                            className="text-2xl sm:text-4xl lg:text-5xl font-bold"
+                          >
+                            {title}
+                          </motion.h2>
+                          <p className="mt-2 max-w-2xl text-sm/relaxed sm:text-base/relaxed text-muted-foreground line-clamp-3">
+                            {item.overview}
+                          </p>
+                          <div className="mt-4 flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                            <span className="px-2 py-1 rounded bg-secondary/40 border border-border/40 capitalize">{mediaType}</span>
+                            <span>•</span>
+                            <span>{item.release_date?.split("-")[0] || item.first_air_date?.split("-")[0] || "N/A"}</span>
+                            <span>•</span>
+                            <span>⭐ {item.vote_average.toFixed(1)}</span>
+                          </div>
+                          <div className="mt-5 flex gap-3">
+                            <Button asChild className="bg-violet-600 hover:bg-violet-500 shadow-[0_0_18px_2px_rgba(139,92,246,0.45)]">
+                              <Link href={`/watch/${mediaType}/${item.id}`}>Watch now</Link>
+                            </Button>
+                          </div>
+                        </div>
+                      </article>
+                    </CarouselItem>
+                  );
+                })}
+              </CarouselContent>
+              <CarouselPrevious className="left-2" />
+              <CarouselNext className="right-2" />
+            </Carousel>
+          </section>
+        )}
+
+        {/* Search Bar */}
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4" aria-label="Search movies and TV shows">
+          <Card className="bg-background/70 backdrop-blur border border-border/50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2">
+                <Search className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search free movies, TV shows..."
+                  className="bg-background/60"
+                  aria-label="Search for movies and TV shows"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* Tabs & Content Grid */}
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8" aria-label="Browse content">
+          {!query.trim() && (
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="mb-6">
+              <TabsList className="grid w-full max-w-md grid-cols-3">
+                <TabsTrigger value="all" className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" aria-hidden="true" />
+                  Trending
+                </TabsTrigger>
+                <TabsTrigger value="movie" className="flex items-center gap-2">
+                  <Film className="h-4 w-4" aria-hidden="true" />
+                  Movies
+                </TabsTrigger>
+                <TabsTrigger value="tv" className="flex items-center gap-2">
+                  <Tv className="h-4 w-4" aria-hidden="true" />
+                  TV Shows
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
+
+          {loading && <p className="text-sm text-muted-foreground">Loading content...</p>}
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {displayContent.map((item) => {
+              const title = item.title || item.name || "Unknown";
+              const mediaType = item.media_type || (activeTab === "tv" ? "tv" : "movie");
+              const year = item.release_date?.split("-")[0] || item.first_air_date?.split("-")[0] || "N/A";
+              
+              return (
+                <motion.div 
+                  key={`${mediaType}-${item.id}`} 
+                  initial={{ opacity: 0, y: 10 }} 
+                  whileInView={{ opacity: 1, y: 0 }} 
+                  viewport={{ once: true, margin: "100px" }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                  <Link href={`/watch/${mediaType}/${item.id}`} className="group block">
+                    <article className="relative aspect-[2/3] overflow-hidden rounded-lg border border-border/40">
                       <Image
-                        src={getImageUrl(item.backdrop_path, "original")}
-                        alt={title}
+                        src={getImageUrl(item.poster_path, "w500")}
+                        alt={`Watch ${title} free online - ${mediaType} ${year}`}
                         fill
-                        priority
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
-                        className="object-cover opacity-80"
-                        quality={85}
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10">
-                        <motion.h2
-                          initial={{ y: 20, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          transition={{ duration: 0.4, ease: "easeOut" }}
-                          className="text-2xl sm:text-4xl lg:text-5xl font-bold"
-                        >
-                          {title}
-                        </motion.h2>
-                        <p className="mt-2 max-w-2xl text-sm/relaxed sm:text-base/relaxed text-muted-foreground line-clamp-3">
-                          {item.overview}
-                        </p>
-                        <div className="mt-4 flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                          <span className="px-2 py-1 rounded bg-secondary/40 border border-border/40 capitalize">{mediaType}</span>
-                          <span>•</span>
-                          <span>{item.release_date?.split("-")[0] || item.first_air_date?.split("-")[0] || "N/A"}</span>
-                          <span>•</span>
-                          <span>⭐ {item.vote_average.toFixed(1)}</span>
-                        </div>
-                        <div className="mt-5 flex gap-3">
-                          <Button asChild className="bg-violet-600 hover:bg-violet-500 shadow-[0_0_18px_2px_rgba(139,92,246,0.45)]">
-                            <Link href={`/watch/${mediaType}/${item.id}`}>Watch now</Link>
-                          </Button>
-                        </div>
+                      <div className="absolute inset-0 ring-1 ring-inset ring-violet-500/0 group-hover:ring-violet-500/40 transition-all duration-300" />
+                      <div className="absolute top-2 right-2 px-2 py-1 rounded text-xs bg-black/70 backdrop-blur">
+                        ⭐ {item.vote_average.toFixed(1)}
+                      </div>
+                    </article>
+                    <div className="mt-2">
+                      <p className="text-sm font-medium line-clamp-1">{title}</p>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>{year}</span>
+                        <span className="capitalize">{mediaType}</span>
                       </div>
                     </div>
-                  </CarouselItem>
-                );
-              })}
-            </CarouselContent>
-            <CarouselPrevious className="left-2" />
-            <CarouselNext className="right-2" />
-          </Carousel>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {displayContent.length === 0 && !loading && (
+            <p className="text-center text-muted-foreground py-8">No results found.</p>
+          )}
         </section>
-      )}
 
-      {/* Search Bar */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4">
-        <Card className="bg-background/70 backdrop-blur border border-border/50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search movies, TV shows..."
-                className="bg-background/60"
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Tabs & Content Grid */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {!query.trim() && (
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="mb-6">
-            <TabsList className="grid w-full max-w-md grid-cols-3">
-              <TabsTrigger value="all" className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Trending
-              </TabsTrigger>
-              <TabsTrigger value="movie" className="flex items-center gap-2">
-                <Film className="h-4 w-4" />
-                Movies
-              </TabsTrigger>
-              <TabsTrigger value="tv" className="flex items-center gap-2">
-                <Tv className="h-4 w-4" />
-                TV Shows
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        )}
-
-        {loading && <p className="text-sm text-muted-foreground">Loading content...</p>}
-        
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          {displayContent.map((item) => {
-            const title = item.title || item.name || "Unknown";
-            const mediaType = item.media_type || (activeTab === "tv" ? "tv" : "movie");
-            const year = item.release_date?.split("-")[0] || item.first_air_date?.split("-")[0] || "N/A";
-            
-            return (
-              <motion.div 
-                key={`${mediaType}-${item.id}`} 
-                initial={{ opacity: 0, y: 10 }} 
-                whileInView={{ opacity: 1, y: 0 }} 
-                viewport={{ once: true, margin: "100px" }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-              >
-                <Link href={`/watch/${mediaType}/${item.id}`} className="group block">
-                  <div className="relative aspect-[2/3] overflow-hidden rounded-lg border border-border/40">
-                    <Image
-                      src={getImageUrl(item.poster_path, "w500")}
-                      alt={title}
-                      fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 ring-1 ring-inset ring-violet-500/0 group-hover:ring-violet-500/40 transition-all duration-300" />
-                    <div className="absolute top-2 right-2 px-2 py-1 rounded text-xs bg-black/70 backdrop-blur">
-                      ⭐ {item.vote_average.toFixed(1)}
-                    </div>
-                  </div>
-                  <div className="mt-2">
-                    <p className="text-sm font-medium line-clamp-1">{title}</p>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{year}</span>
-                      <span className="capitalize">{mediaType}</span>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {displayContent.length === 0 && !loading && (
-          <p className="text-center text-muted-foreground py-8">No results found.</p>
-        )}
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-border/40 py-10 mt-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} KiraStreams</p>
-          <p className="text-xs text-muted-foreground">Powered by TMDB • Neon purple/blue • Built with Next.js</p>
-        </div>
-      </footer>
-    </div>
+        {/* Footer */}
+        <footer className="border-t border-border/40 py-10 mt-8">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} KiraStreams - Free Online Movies & TV Shows Streaming</p>
+            <p className="text-xs text-muted-foreground">Ad-Free Streaming • Powered by TMDB • Built with Next.js</p>
+          </div>
+        </footer>
+      </main>
+    </>
   );
 }
 
