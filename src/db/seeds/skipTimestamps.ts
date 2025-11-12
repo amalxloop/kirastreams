@@ -4,86 +4,100 @@ import { skipTimestamps } from '@/db/schema';
 async function main() {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     
+    // Clear existing data first
+    await db.delete(skipTimestamps);
+    console.log('✓ Cleared existing skip timestamps');
+    
     const sampleSkipTimestamps = [
+        // Movie: Moana 2 (ID: 1062722) - Currently watching
         {
-            contentId: 'tv_death_note',
-            contentType: 'tv',
-            introStart: 10,
-            introEnd: 100,
-            outroStart: 1290,
-            outroEnd: 1380,
-            createdAt: currentTimestamp,
-        },
-        {
-            contentId: 'movie_your_name',
+            contentId: '1062722',
             contentType: 'movie',
-            introStart: 0,
-            introEnd: 120,
-            outroStart: null,
-            outroEnd: null,
+            introStart: 10,
+            introEnd: 85,
+            outroStart: 5820, // ~1h 37m (credits start)
+            outroEnd: 6120,
             createdAt: currentTimestamp,
         },
+        // Movie: Red One (ID: 912649)
         {
-            contentId: 'tv_naruto',
+            contentId: '912649',
+            contentType: 'movie',
+            introStart: 5,
+            introEnd: 72,
+            outroStart: 6900,
+            outroEnd: 7200,
+            createdAt: currentTimestamp,
+        },
+        // Movie: Venom: The Last Dance (ID: 1084736)
+        {
+            contentId: '1084736',
+            contentType: 'movie',
+            introStart: 8,
+            introEnd: 65,
+            outroStart: 6480,
+            outroEnd: 6780,
+            createdAt: currentTimestamp,
+        },
+        // Movie: Wicked (ID: 402431)
+        {
+            contentId: '402431',
+            contentType: 'movie',
+            introStart: 12,
+            introEnd: 90,
+            outroStart: 9600,
+            outroEnd: 9900,
+            createdAt: currentTimestamp,
+        },
+        // Movie: Gladiator II (ID: 558449)
+        {
+            contentId: '558449',
+            contentType: 'movie',
+            introStart: 15,
+            introEnd: 88,
+            outroStart: 8700,
+            outroEnd: 9000,
+            createdAt: currentTimestamp,
+        },
+        // TV: The Penguin (ID: 194764)
+        {
+            contentId: '194764',
             contentType: 'tv',
             introStart: 30,
             introEnd: 120,
-            outroStart: 1290,
-            outroEnd: 1380,
+            outroStart: 3240,
+            outroEnd: 3480,
             createdAt: currentTimestamp,
         },
+        // TV: Arcane (ID: 94605)
         {
-            contentId: 'tv_one_piece',
-            contentType: 'tv',
-            introStart: 45,
-            introEnd: 135,
-            outroStart: 1290,
-            outroEnd: 1380,
-            createdAt: currentTimestamp,
-        },
-        {
-            contentId: 'tv_attack_on_titan',
+            contentId: '94605',
             contentType: 'tv',
             introStart: 15,
-            introEnd: 105,
-            outroStart: 1350,
-            outroEnd: 1440,
+            introEnd: 95,
+            outroStart: 2400,
+            outroEnd: 2640,
             createdAt: currentTimestamp,
         },
+        // TV: Agatha All Along (ID: 138501)
         {
-            contentId: 'tv_demon_slayer',
+            contentId: '138501',
             contentType: 'tv',
             introStart: 20,
             introEnd: 110,
-            outroStart: 1350,
-            outroEnd: 1440,
+            outroStart: 2700,
+            outroEnd: 2940,
             createdAt: currentTimestamp,
         },
-        {
-            contentId: 'movie_spirited_away',
-            contentType: 'movie',
-            introStart: null,
-            introEnd: null,
-            outroStart: 7350,
-            outroEnd: 7440,
-            createdAt: currentTimestamp,
-        },
-        {
-            contentId: 'tv_fullmetal_alchemist',
-            contentType: 'tv',
-            introStart: 25,
-            introEnd: 115,
-            outroStart: 1350,
-            outroEnd: 1440,
-            createdAt: currentTimestamp,
-        }
     ];
 
     await db.insert(skipTimestamps).values(sampleSkipTimestamps);
     
+    console.log(`✅ Inserted ${sampleSkipTimestamps.length} skip timestamp records`);
     console.log('✅ Skip timestamps seeder completed successfully');
 }
 
 main().catch((error) => {
     console.error('❌ Seeder failed:', error);
+    process.exit(1);
 });
