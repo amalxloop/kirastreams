@@ -93,7 +93,7 @@ export default function HomePage() {
         </ul>
       </div>
       
-      <main className="min-h-screen bg-[radial-gradient(1200px_600px_at_20%_-10%,rgba(124,58,237,0.25),transparent),radial-gradient(1200px_600px_at_80%_10%,rgba(59,130,246,0.2),transparent)]">
+      <main className="min-h-screen bg-[radial-gradient(800px_400px_at_20%_-10%,rgba(124,58,237,0.25),transparent),radial-gradient(800px_400px_at_80%_10%,rgba(59,130,246,0.2),transparent)]">
         {/* Nav */}
         <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
