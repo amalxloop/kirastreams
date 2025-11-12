@@ -96,8 +96,8 @@ export default function HomePage() {
       <main className="min-h-screen bg-[radial-gradient(1200px_600px_at_20%_-10%,rgba(124,58,237,0.25),transparent),radial-gradient(1200px_600px_at_80%_10%,rgba(59,130,246,0.2),transparent)]">
         {/* Nav */}
         <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3" aria-label="KiraStreams - Free Streaming Home">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+            <Link href="/" className="flex items-center gap-3 shrink-0" aria-label="KiraStreams - Free Streaming Home">
               <div className="relative h-8 w-8 rounded-md overflow-hidden shadow-[0_0_24px_2px_rgba(167,139,250,0.45)]">
                 <Image
                   src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
@@ -107,7 +107,7 @@ export default function HomePage() {
                   className="object-cover"
                 />
               </div>
-              <span className="text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">KiraStreams</span>
+              <span className="text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300 hidden sm:inline">KiraStreams</span>
             </Link>
             <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
               <Link href="/movies" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -120,14 +120,14 @@ export default function HomePage() {
                 Anime
               </Link>
             </nav>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <ThemeToggle />
               {!user ? (
                 <AuthButtons />
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Avatar className="ml-2 h-8 w-8 ring-2 ring-violet-500/50 shadow-[0_0_12px_rgba(139,92,246,0.6)] cursor-pointer">
+                    <Avatar className="h-8 w-8 ring-2 ring-violet-500/50 shadow-[0_0_12px_rgba(139,92,246,0.6)] cursor-pointer">
                       <AvatarImage src={user.avatarUrl} />
                       <AvatarFallback>{user.name?.slice(0,2).toUpperCase() || "KS"}</AvatarFallback>
                     </Avatar>
@@ -266,10 +266,13 @@ export default function HomePage() {
 
 function AuthButtons() {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1 sm:gap-2">
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-violet-300 hover:text-violet-200"><LogIn className="h-4 w-4 mr-1" /> Log in</Button>
+          <Button variant="ghost" size="sm" className="text-violet-300 hover:text-violet-200 text-xs sm:text-sm px-2 sm:px-4">
+            <LogIn className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+            <span className="hidden sm:inline">Log in</span>
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -280,7 +283,10 @@ function AuthButtons() {
       </Dialog>
       <Dialog>
         <DialogTrigger asChild>
-          <Button size="sm" className="bg-sky-600 hover:bg-sky-500 shadow-[0_0_16px_rgba(56,189,248,0.35)]"><UserPlus className="h-4 w-4 mr-1" /> Sign up</Button>
+          <Button size="sm" className="bg-sky-600 hover:bg-sky-500 shadow-[0_0_16px_rgba(56,189,248,0.35)] text-xs sm:text-sm px-2 sm:px-4">
+            <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+            <span className="hidden sm:inline">Sign up</span>
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

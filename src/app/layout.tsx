@@ -155,7 +155,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased dark">
+      <body className="antialiased">
         <ErrorReporter />
         <Script
           src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/scripts//route-messenger.js"
