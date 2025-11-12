@@ -201,6 +201,25 @@ export default function WatchPage() {
     }
   }, [currentTime, duration, user, type, movieDetails, tvDetails, addToHistory]);
 
+  // Fallback: Add to watch history after 30 seconds even if player doesn't send updates
+  useEffect(() => {
+    if (!user) return;
+    
+    const timer = setTimeout(() => {
+      const details = type === "movie" ? movieDetails : tvDetails;
+      if (details) {
+        const title = type === "movie" ? movieDetails?.title : tvDetails?.name;
+        if (title) {
+          // Add to history with estimated values since player might not send updates
+          addToHistory(title, details.poster_path, 35, duration || 7200);
+          console.log("Watch history added (fallback timer):", title);
+        }
+      }
+    }, 32000); // 32 seconds to ensure it's past the 30-second mark
+
+    return () => clearTimeout(timer);
+  }, [user, type, movieDetails, tvDetails, addToHistory, duration]);
+
   const handleSkipIntro = () => {
     if (timestamps?.introEnd) {
       // Send message to iframe to skip
