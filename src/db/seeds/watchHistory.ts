@@ -10,7 +10,7 @@ async function main() {
     const sampleWatchHistory = [
         // Movies (12 records)
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '550',
             contentType: 'movie',
             title: 'Fight Club',
@@ -20,7 +20,7 @@ async function main() {
             watchedAt: now - 7200, // now - 2 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '603',
             contentType: 'movie',
             title: 'The Matrix',
@@ -30,7 +30,7 @@ async function main() {
             watchedAt: now - 28800, // now - 8 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '13',
             contentType: 'movie',
             title: 'Forrest Gump',
@@ -40,7 +40,7 @@ async function main() {
             watchedAt: now - 97200, // now - 1 day - 3 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '155',
             contentType: 'movie',
             title: 'The Dark Knight',
@@ -50,7 +50,7 @@ async function main() {
             watchedAt: now - 122400, // now - 1 day - 10 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '238',
             contentType: 'movie',
             title: 'The Godfather',
@@ -60,7 +60,7 @@ async function main() {
             watchedAt: now - 190800, // now - 2 days - 5 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '424',
             contentType: 'movie',
             title: "Schindler's List",
@@ -70,7 +70,7 @@ async function main() {
             watchedAt: now - 223200, // now - 2 days - 14 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '278',
             contentType: 'movie',
             title: 'The Shawshank Redemption',
@@ -80,7 +80,7 @@ async function main() {
             watchedAt: now - 280800, // now - 3 days - 6 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '680',
             contentType: 'movie',
             title: 'Pulp Fiction',
@@ -90,7 +90,7 @@ async function main() {
             watchedAt: now - 302400, // now - 3 days - 12 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '429',
             contentType: 'movie',
             title: 'The Good, the Bad and the Ugly',
@@ -100,7 +100,7 @@ async function main() {
             watchedAt: now - 374400, // now - 4 days - 8 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '19404',
             contentType: 'movie',
             title: 'Dilwale Dulhania Le Jayenge',
@@ -110,7 +110,7 @@ async function main() {
             watchedAt: now - 439200, // now - 5 days - 2 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '372058',
             contentType: 'movie',
             title: 'Your Name',
@@ -120,7 +120,7 @@ async function main() {
             watchedAt: now - 496800, // now - 5 days - 18 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '129',
             contentType: 'movie',
             title: 'Spirited Away',
@@ -131,7 +131,7 @@ async function main() {
         },
         // TV Shows (8 records)
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '1396',
             contentType: 'tv',
             title: 'Breaking Bad',
@@ -141,7 +141,7 @@ async function main() {
             watchedAt: now - 14400, // now - 4 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '1399',
             contentType: 'tv',
             title: 'Game of Thrones',
@@ -151,7 +151,7 @@ async function main() {
             watchedAt: now - 54000, // now - 15 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '60574',
             contentType: 'tv',
             title: 'Peaky Blinders',
@@ -161,7 +161,7 @@ async function main() {
             watchedAt: now - 111600, // now - 1 day - 7 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '94605',
             contentType: 'tv',
             title: 'Arcane',
@@ -171,7 +171,7 @@ async function main() {
             watchedAt: now - 205200, // now - 2 days - 9 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '85271',
             contentType: 'tv',
             title: 'WandaVision',
@@ -181,7 +181,7 @@ async function main() {
             watchedAt: now - 316800, // now - 3 days - 16 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '1668',
             contentType: 'tv',
             title: 'Friends',
@@ -191,7 +191,7 @@ async function main() {
             watchedAt: now - 385200, // now - 4 days - 11 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '46952',
             contentType: 'tv',
             title: 'The Witcher',
@@ -201,7 +201,7 @@ async function main() {
             watchedAt: now - 482400, // now - 5 days - 14 hours
         },
         {
-            userId: 'demo-user',
+            userId: 'user',
             contentId: '82856',
             contentType: 'tv',
             title: 'The Mandalorian',
