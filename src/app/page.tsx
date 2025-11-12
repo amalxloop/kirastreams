@@ -19,6 +19,7 @@ import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { RecommendationsSection } from "@/components/RecommendationsSection";
 import { DynamicHeroBanner } from "@/components/DynamicHeroBanner";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { WatchHistoryTimeline } from "@/components/WatchHistoryTimeline";
 
 export default function HomePage() {
   const { user, logout } = useAuth();
@@ -162,10 +163,13 @@ export default function HomePage() {
         </section>
 
         {/* Continue Watching Section */}
-        {!query.trim() && <ContinueWatching />}
+        {!query.trim() && user && <ContinueWatching userId={user.id} />}
 
         {/* Smart Recommendations */}
         {!query.trim() && <RecommendationsSection />}
+
+        {/* Watch History Timeline */}
+        {!query.trim() && user && <WatchHistoryTimeline userId={user.id} days={7} limit={20} />}
 
         {/* Tabs & Content Grid */}
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8" aria-label="Browse content">

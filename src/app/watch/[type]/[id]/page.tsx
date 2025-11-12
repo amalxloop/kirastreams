@@ -4,13 +4,12 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronLeft, Star, Clock, Calendar, PlayCircle, Loader2 } from "lucide-react";
+import { ChevronLeft, Star, Clock, Calendar, PlayCircle, Loader2, SkipForward } from "lucide-react";
 import {
   getMovieDetails,
   getTVDetails,
@@ -22,19 +21,23 @@ import {
   TMDBSeason,
   TMDBMovie,
 } from "@/lib/tmdb";
-import { saveWatchProgress, WatchProgress } from "@/lib/watch-progress";
-import { addToWatchHistory } from "@/lib/recommendations";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { Bookmark } from "@/lib/bookmarks";
 import { EpisodeThumbnails } from "@/components/EpisodeThumbnails";
+import { useWatchProgress } from "@/lib/hooks/useWatchProgress";
+import { useSkipTimestamps } from "@/lib/hooks/useSkipTimestamps";
+import { useContentTheme } from "@/lib/contexts/ThemeContext";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 type PlayerType = "vidfast" | "vidzy" | "2embed";
 
 export default function WatchPage() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useAuth();
   const type = params.type as "movie" | "tv";
   const id = Number(params.id);
+  const contentId = String(id);
 
   const [movieDetails, setMovieDetails] = useState<TMDBMovieDetail | null>(null);
   const [tvDetails, setTVDetails] = useState<TMDBTVDetail | null>(null);
@@ -44,19 +47,39 @@ export default function WatchPage() {
   const [recommendations, setRecommendations] = useState<TMDBMovie[]>([]);
   const [loading, setLoading] = useState(true);
   const [playerLoading, setPlayerLoading] = useState(true);
-  const [watchProgress, setWatchProgress] = useState<any>(null);
   const [player, setPlayer] = useState<PlayerType>("vidfast");
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [showSkipIntro, setShowSkipIntro] = useState(false);
+  const [showSkipOutro, setShowSkipOutro] = useState(false);
 
-  // Memoize player URL to prevent unnecessary recalculations
+  // Hooks for watch progress and skip timestamps
+  const { progress, saveProgress, addToHistory } = useWatchProgress(
+    user?.id || null,
+    contentId,
+    type
+  );
+  const { timestamps } = useSkipTimestamps(contentId, type);
+  const { applyTheme, resetTheme } = useContentTheme();
+
+  // Apply theme when content loads
+  useEffect(() => {
+    if (contentId && type) {
+      applyTheme(contentId, type);
+    }
+    return () => resetTheme();
+  }, [contentId, type, applyTheme, resetTheme]);
+
+  // Memoize player URL with saved progress
   const playerUrl = useMemo(() => {
     let url = "";
     if (player === "vidfast") {
       if (type === "movie") {
-        const startTime = watchProgress?.timestamp ? `?progress=${Math.floor(watchProgress.timestamp)}` : "";
+        const startTime = progress?.progressSeconds ? `?progress=${Math.floor(progress.progressSeconds)}` : "";
         const separator = startTime ? "&" : "?";
         url = `https://vidfast.pro/movie/${id}${startTime}${separator}color=8B5CF6&overlay=true`;
       } else if (type === "tv" && tvDetails) {
-        const startTime = watchProgress?.timestamp ? `?progress=${Math.floor(watchProgress.timestamp)}&` : "?";
+        const startTime = progress?.progressSeconds ? `?progress=${Math.floor(progress.progressSeconds)}&` : "?";
         url = `https://vidfast.pro/tv/${id}/${selectedSeason}/${selectedEpisode}${startTime}nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&color=8B5CF6&overlay=true`;
       }
     } else if (player === "vidzy") {
@@ -73,9 +96,9 @@ export default function WatchPage() {
       }
     }
     return url;
-  }, [player, type, id, selectedSeason, selectedEpisode, watchProgress?.timestamp, tvDetails]);
+  }, [player, type, id, selectedSeason, selectedEpisode, progress?.progressSeconds, tvDetails]);
 
-  // Fetch initial data (only when type or id changes)
+  // Fetch initial data
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -83,31 +106,11 @@ export default function WatchPage() {
         if (type === "movie") {
           const details = await getMovieDetails(id);
           setMovieDetails(details);
-          
-          // Add to watch history
-          addToWatchHistory({
-            id,
-            type: "movie",
-            title: details.title,
-            genre_ids: details.genres.map(g => g.id),
-            timestamp: Date.now(),
-          });
-          
           const recs = await getPopular("movie");
           setRecommendations(recs.slice(0, 6));
         } else if (type === "tv") {
           const details = await getTVDetails(id);
           setTVDetails(details);
-          
-          // Add to watch history
-          addToWatchHistory({
-            id,
-            type: "tv",
-            title: details.name,
-            genre_ids: details.genres.map(g => g.id),
-            timestamp: Date.now(),
-          });
-          
           const recs = await getPopular("tv");
           setRecommendations(recs.slice(0, 6));
         }
@@ -120,7 +123,7 @@ export default function WatchPage() {
     fetchData();
   }, [type, id]);
 
-  // Fetch season data separately (only when season changes for TV shows)
+  // Fetch season data
   useEffect(() => {
     async function fetchSeasonData() {
       if (type === "tv" && tvDetails) {
@@ -135,48 +138,29 @@ export default function WatchPage() {
     fetchSeasonData();
   }, [type, id, selectedSeason, tvDetails]);
 
-  // Reset player loading when player changes
+  // Reset player loading
   useEffect(() => {
     setPlayerLoading(true);
-    
-    // Add timeout to prevent infinite loading
-    const timeout = setTimeout(() => {
-      setPlayerLoading(false);
-    }, 10000); // 10 second timeout
-    
+    const timeout = setTimeout(() => setPlayerLoading(false), 10000);
     return () => clearTimeout(timeout);
   }, [player, selectedSeason, selectedEpisode]);
 
-  // Watch progress tracking
+  // Watch progress tracking from player
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
       try {
         const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-        if (data.progress !== undefined) {
-          setWatchProgress(data);
+        
+        if (data.timestamp !== undefined && data.duration !== undefined) {
+          const progressSeconds = Math.floor(data.timestamp);
+          const totalSeconds = Math.floor(data.duration);
           
-          // Save watch progress
-          const details = type === "movie" ? movieDetails : tvDetails;
-          if (details) {
-            const progress: WatchProgress = {
-              id,
-              type,
-              title: type === "movie" ? (movieDetails?.title || "") : (tvDetails?.name || ""),
-              poster_path: details.poster_path,
-              backdrop_path: details.backdrop_path,
-              timestamp: data.timestamp || data.progress,
-              duration: data.duration || 1,
-              progress: Math.round(((data.timestamp || data.progress) / (data.duration || 1)) * 100),
-              lastWatched: Date.now(),
-            };
-            
-            if (type === "tv") {
-              progress.seasonNumber = selectedSeason;
-              progress.episodeNumber = selectedEpisode;
-              progress.episodeName = seasonData?.episodes[selectedEpisode - 1]?.name;
-            }
-            
-            saveWatchProgress(progress);
+          setCurrentTime(progressSeconds);
+          setDuration(totalSeconds);
+          
+          // Save progress every 10 seconds
+          if (user && progressSeconds % 10 === 0 && totalSeconds > 0) {
+            saveProgress(progressSeconds, totalSeconds);
           }
         }
       } catch (error) {
@@ -185,20 +169,64 @@ export default function WatchPage() {
     }
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [type, id, selectedSeason, selectedEpisode, movieDetails, tvDetails, seasonData]);
+  }, [user, saveProgress]);
 
-  // Load saved progress
+  // Check if should show skip buttons
   useEffect(() => {
-    const key = type === "movie" ? `movie-${id}` : `tv-${id}-${selectedSeason}-${selectedEpisode}`;
-    const saved = localStorage.getItem(`watch-progress-${key}`);
-    if (saved) {
-      try {
-        setWatchProgress(JSON.parse(saved));
-      } catch (error) {
-        // Ignore
+    if (!timestamps) return;
+
+    // Check intro
+    if (timestamps.introStart !== null && timestamps.introEnd !== null) {
+      const inIntro = currentTime >= timestamps.introStart && currentTime <= timestamps.introEnd;
+      setShowSkipIntro(inIntro);
+    }
+
+    // Check outro
+    if (timestamps.outroStart !== null && timestamps.outroEnd !== null) {
+      const inOutro = currentTime >= timestamps.outroStart && currentTime <= timestamps.outroEnd;
+      setShowSkipOutro(inOutro);
+    }
+  }, [currentTime, timestamps]);
+
+  // Add to watch history when video starts playing
+  useEffect(() => {
+    if (currentTime > 30 && duration > 0 && user) {
+      const details = type === "movie" ? movieDetails : tvDetails;
+      if (details) {
+        const title = type === "movie" ? movieDetails?.title : tvDetails?.name;
+        if (title) {
+          addToHistory(title, details.poster_path, currentTime, duration);
+        }
       }
     }
-  }, [type, id, selectedSeason, selectedEpisode]);
+  }, [currentTime, duration, user, type, movieDetails, tvDetails, addToHistory]);
+
+  const handleSkipIntro = () => {
+    if (timestamps?.introEnd) {
+      // Send message to iframe to skip
+      const iframe = document.querySelector("iframe");
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage(
+          { action: "seek", time: timestamps.introEnd },
+          "*"
+        );
+      }
+      setShowSkipIntro(false);
+    }
+  };
+
+  const handleSkipOutro = () => {
+    if (timestamps?.outroEnd) {
+      const iframe = document.querySelector("iframe");
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage(
+          { action: "seek", time: timestamps.outroEnd },
+          "*"
+        );
+      }
+      setShowSkipOutro(false);
+    }
+  };
 
   const details = type === "movie" ? movieDetails : tvDetails;
   const title = movieDetails?.title || tvDetails?.name || "Loading...";
@@ -207,7 +235,6 @@ export default function WatchPage() {
   const cast = details?.credits?.cast.slice(0, 6) || [];
   const genres = details?.genres || [];
 
-  // Create bookmark object
   const bookmarkData: Bookmark | null = details ? {
     id,
     type,
@@ -294,7 +321,7 @@ export default function WatchPage() {
           </Select>
         </div>
 
-        <Card className="bg-background/70 backdrop-blur border border-border/50 overflow-hidden">
+        <Card className="bg-background/70 backdrop-blur border border-border/50 overflow-hidden relative">
           <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
             {/* Loading Overlay */}
             {playerLoading && (
@@ -305,6 +332,47 @@ export default function WatchPage() {
                 </div>
               </div>
             )}
+
+            {/* Skip Intro Button */}
+            <AnimatePresence>
+              {showSkipIntro && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="absolute bottom-20 right-6 z-30"
+                >
+                  <Button
+                    onClick={handleSkipIntro}
+                    className="bg-violet-600 hover:bg-violet-500 shadow-[0_0_18px_2px_rgba(139,92,246,0.45)] gap-2"
+                  >
+                    <SkipForward className="h-4 w-4" />
+                    Skip Intro
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Skip Outro Button */}
+            <AnimatePresence>
+              {showSkipOutro && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="absolute bottom-20 right-6 z-30"
+                >
+                  <Button
+                    onClick={handleSkipOutro}
+                    className="bg-sky-600 hover:bg-sky-500 shadow-[0_0_18px_2px_rgba(56,189,248,0.45)] gap-2"
+                  >
+                    <SkipForward className="h-4 w-4" />
+                    Skip Outro
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <iframe
               key={type === "tv" ? `${player}-tv-${id}-${selectedSeason}-${selectedEpisode}` : `${player}-movie-${id}`}
               src={playerUrl}

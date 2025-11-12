@@ -4,39 +4,72 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { WatchProgress, getAllWatchProgress } from "@/lib/watch-progress";
 import { getImageUrl } from "@/lib/tmdb";
 import { Play, X } from "lucide-react";
 import { Button } from "./ui/button";
 
-export function ContinueWatching() {
-  const [progress, setProgress] = useState<WatchProgress[]>([]);
-  const [mounted, setMounted] = useState(false);
+interface WatchProgressItem {
+  id: number;
+  userId: string;
+  contentId: string;
+  contentType: string;
+  progressSeconds: number;
+  totalSeconds: number;
+  lastWatchedAt: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+interface ContinueWatchingProps {
+  userId: string | null;
+}
+
+export function ContinueWatching({ userId }: ContinueWatchingProps) {
+  const [progress, setProgress] = useState<WatchProgressItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setMounted(true);
-    const watchProgress = getAllWatchProgress();
-    setProgress(watchProgress.slice(0, 6)); // Show top 6
-  }, []);
+    async function fetchProgress() {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
 
-  const handleRemove = (item: WatchProgress, e: React.MouseEvent) => {
+      try {
+        const response = await fetch(`/api/watch-progress?userId=${encodeURIComponent(userId)}&limit=6`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          setProgress(data.progress || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch watch progress:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProgress();
+  }, [userId]);
+
+  const handleRemove = async (itemId: number, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    const key = item.type === "movie" 
-      ? `watch-progress-movie-${item.id}` 
-      : `watch-progress-tv-${item.id}-${item.seasonNumber}-${item.episodeNumber}`;
-    
-    localStorage.removeItem(key);
-    setProgress(prev => prev.filter(p => {
-      if (p.type === "movie") {
-        return !(p.id === item.id && p.type === item.type);
+    try {
+      const response = await fetch(`/api/watch-progress/${itemId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setProgress(prev => prev.filter(p => p.id !== itemId));
       }
-      return !(p.id === item.id && p.type === item.type && p.seasonNumber === item.seasonNumber && p.episodeNumber === item.episodeNumber);
-    }));
+    } catch (error) {
+      console.error("Failed to remove progress:", error);
+    }
   };
 
-  if (!mounted || progress.length === 0) return null;
+  if (loading || !userId || progress.length === 0) return null;
 
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -47,32 +80,27 @@ export function ContinueWatching() {
       
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {progress.map((item, index) => {
-          const url = item.type === "movie" 
-            ? `/watch/movie/${item.id}` 
-            : `/watch/tv/${item.id}`;
+          const progressPercent = Math.round((item.progressSeconds / item.totalSeconds) * 100);
+          const url = `/watch/${item.contentType}/${item.contentId}`;
           
           return (
             <motion.div
-              key={`${item.type}-${item.id}-${item.seasonNumber}-${item.episodeNumber}`}
+              key={item.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
               <Link href={url} className="group block relative">
                 <div className="relative aspect-[2/3] overflow-hidden rounded-lg border border-border/40">
-                  <Image
-                    src={getImageUrl(item.poster_path, "w342")}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
+                  <div className="absolute inset-0 bg-secondary/40 flex items-center justify-center">
+                    <span className="text-xs text-muted-foreground">Loading...</span>
+                  </div>
                   
                   {/* Progress Bar */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/60">
+                  <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/60 z-10">
                     <div 
                       className="h-full bg-violet-500 transition-all"
-                      style={{ width: `${Math.min(item.progress, 100)}%` }}
+                      style={{ width: `${Math.min(progressPercent, 100)}%` }}
                     />
                   </div>
                   
@@ -80,8 +108,8 @@ export function ContinueWatching() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute top-2 right-2 h-6 w-6 bg-black/70 hover:bg-black/90 backdrop-blur opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => handleRemove(item, e)}
+                    className="absolute top-2 right-2 h-6 w-6 bg-black/70 hover:bg-black/90 backdrop-blur opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    onClick={(e) => handleRemove(item.id, e)}
                   >
                     <X className="h-3 w-3" />
                   </Button>
@@ -90,12 +118,10 @@ export function ContinueWatching() {
                 </div>
                 
                 <div className="mt-2">
-                  <p className="text-sm font-medium line-clamp-1">{item.title}</p>
+                  <p className="text-sm font-medium line-clamp-1">{item.contentId}</p>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{Math.round(item.progress)}% watched</span>
-                    {item.type === "tv" && item.seasonNumber && item.episodeNumber && (
-                      <span>S{item.seasonNumber} E{item.episodeNumber}</span>
-                    )}
+                    <span>{progressPercent}% watched</span>
+                    <span className="capitalize">{item.contentType}</span>
                   </div>
                 </div>
               </Link>

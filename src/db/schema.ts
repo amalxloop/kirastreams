@@ -77,3 +77,55 @@ export const adminSettings = sqliteTable('admin_settings', {
   theme: text('theme').notNull().default('dark'),
   updatedAt: text('updated_at').notNull(),
 });
+
+// Add watch_progress table
+export const watchProgress = sqliteTable('watch_progress', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull(),
+  contentId: text('content_id').notNull(),
+  contentType: text('content_type').notNull(), // 'movie', 'tv'
+  progressSeconds: integer('progress_seconds').notNull().default(0),
+  totalSeconds: integer('total_seconds').notNull(),
+  lastWatchedAt: integer('last_watched_at').notNull(),
+  createdAt: integer('created_at').notNull(),
+  updatedAt: integer('updated_at').notNull(),
+});
+
+// Add watch_history table
+export const watchHistory = sqliteTable('watch_history', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull(),
+  contentId: text('content_id').notNull(),
+  contentType: text('content_type').notNull(), // 'movie', 'tv'
+  title: text('title').notNull(),
+  posterPath: text('poster_path'),
+  watchedAt: integer('watched_at').notNull(),
+  progressSeconds: integer('progress_seconds').notNull().default(0),
+  totalSeconds: integer('total_seconds').notNull(),
+});
+
+// Add skip_timestamps table
+export const skipTimestamps = sqliteTable('skip_timestamps', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  contentId: text('content_id').notNull(),
+  contentType: text('content_type').notNull(), // 'movie', 'tv'
+  introStart: integer('intro_start'),
+  introEnd: integer('intro_end'),
+  outroStart: integer('outro_start'),
+  outroEnd: integer('outro_end'),
+  createdAt: integer('created_at').notNull(),
+});
+
+// Add content_themes table
+export const contentThemes = sqliteTable('content_themes', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  contentId: text('content_id').notNull(),
+  contentType: text('content_type').notNull(), // 'movie', 'tv'
+  themeName: text('theme_name').notNull(),
+  primaryColor: text('primary_color').notNull(),
+  secondaryColor: text('secondary_color').notNull(),
+  accentColor: text('accent_color').notNull(),
+  gradientFrom: text('gradient_from'),
+  gradientTo: text('gradient_to'),
+  createdAt: integer('created_at').notNull(),
+});
