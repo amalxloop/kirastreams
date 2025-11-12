@@ -161,25 +161,6 @@ export function DynamicHeroBanner({ items, autoScrollInterval = 5000 }: DynamicH
             </button>
           </>
         )}
-
-        {/* Slide Indicators */}
-        {items.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-            {items.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                disabled={isTransitioning}
-                className={`h-1.5 rounded-full transition-all ${
-                  index === currentIndex 
-                    ? "w-8 bg-violet-500" 
-                    : "w-1.5 bg-white/40 hover:bg-white/60"
-                } disabled:cursor-not-allowed`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </section>
   );
