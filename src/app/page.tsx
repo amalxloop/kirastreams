@@ -107,7 +107,7 @@ export default function HomePage() {
                   className="object-cover"
                 />
               </div>
-              <span className="text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300 hidden sm:inline">KiraStreams</span>
+              <span className="text-lg sm:text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">KiraStreams</span>
             </Link>
             <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
               <Link href="/movies" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
