@@ -54,27 +54,11 @@ export function WatchHistoryTimeline({ userId, days = 7, limit = 20 }: WatchHist
   }, [userId, days, limit]);
 
   if (loading) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center gap-2 mb-6">
-          <Clock className="h-5 w-5 text-violet-400" />
-          <h2 className="text-2xl font-bold">Watch History</h2>
-        </div>
-        <p className="text-sm text-muted-foreground">Loading your watch history...</p>
-      </div>
-    );
+    return null;
   }
 
   if (history.length === 0) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center gap-2 mb-6">
-          <Clock className="h-5 w-5 text-violet-400" />
-          <h2 className="text-2xl font-bold">Watch History</h2>
-        </div>
-        <p className="text-sm text-muted-foreground">No watch history in the last {days} days.</p>
-      </div>
-    );
+    return null;
   }
 
   // Group by date

@@ -20,9 +20,13 @@ import { RecommendationsSection } from "@/components/RecommendationsSection";
 import { DynamicHeroBanner } from "@/components/DynamicHeroBanner";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { WatchHistoryTimeline } from "@/components/WatchHistoryTimeline";
+import { getCurrentUserId } from "@/lib/guestUser";
 
 export default function HomePage() {
   const { user, logout } = useAuth();
+  // Get user ID - either authenticated or guest
+  const userId = getCurrentUserId(user?.id);
+  
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"all" | "movie" | "tv" | "anime">("all");
   const [trending, setTrending] = useState<TMDBMovie[]>([]);
@@ -162,14 +166,14 @@ export default function HomePage() {
           <SearchAutocomplete onSearch={setQuery} />
         </section>
 
-        {/* Continue Watching Section */}
-        {!query.trim() && user && <ContinueWatching userId={user.id} />}
+        {/* Continue Watching Section - show for both logged-in and guest users */}
+        {!query.trim() && <ContinueWatching userId={userId} />}
 
         {/* Smart Recommendations */}
         {!query.trim() && <RecommendationsSection />}
 
-        {/* Watch History Timeline */}
-        {!query.trim() && user && <WatchHistoryTimeline userId={user.id} days={7} limit={20} />}
+        {/* Watch History Timeline - show for both logged-in and guest users */}
+        {!query.trim() && <WatchHistoryTimeline userId={userId} days={7} limit={20} />}
 
         {/* Tabs & Content Grid */}
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8" aria-label="Browse content">

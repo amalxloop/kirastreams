@@ -28,6 +28,7 @@ import { useWatchProgress } from "@/lib/hooks/useWatchProgress";
 import { useSkipTimestamps } from "@/lib/hooks/useSkipTimestamps";
 import { useContentTheme } from "@/lib/contexts/ThemeContext";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { getCurrentUserId } from "@/lib/guestUser";
 
 type PlayerType = "vidfast" | "vidzy" | "2embed";
 
@@ -38,6 +39,9 @@ export default function WatchPage() {
   const type = params.type as "movie" | "tv";
   const id = Number(params.id);
   const contentId = String(id);
+
+  // Get user ID - either authenticated or guest
+  const userId = getCurrentUserId(user?.id);
 
   const [movieDetails, setMovieDetails] = useState<TMDBMovieDetail | null>(null);
   const [tvDetails, setTVDetails] = useState<TMDBTVDetail | null>(null);
@@ -53,9 +57,9 @@ export default function WatchPage() {
   const [showSkipIntro, setShowSkipIntro] = useState(false);
   const [showSkipOutro, setShowSkipOutro] = useState(false);
 
-  // Hooks for watch progress and skip timestamps
+  // Hooks for watch progress and skip timestamps - now using userId (authenticated or guest)
   const { progress, saveProgress, addToHistory } = useWatchProgress(
-    user?.id || null,
+    userId,
     contentId,
     type
   );
@@ -158,8 +162,8 @@ export default function WatchPage() {
           setCurrentTime(progressSeconds);
           setDuration(totalSeconds);
           
-          // Save progress every 10 seconds
-          if (user && progressSeconds % 10 === 0 && totalSeconds > 0) {
+          // Save progress every 10 seconds - now works for both authenticated and guest users
+          if (progressSeconds % 10 === 0 && totalSeconds > 0) {
             saveProgress(progressSeconds, totalSeconds);
           }
         }
@@ -169,7 +173,7 @@ export default function WatchPage() {
     }
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [user, saveProgress]);
+  }, [saveProgress]);
 
   // Check if should show skip buttons
   useEffect(() => {
@@ -188,9 +192,9 @@ export default function WatchPage() {
     }
   }, [currentTime, timestamps]);
 
-  // Add to watch history when video starts playing
+  // Add to watch history when video starts playing - now works for both authenticated and guest users
   useEffect(() => {
-    if (currentTime > 30 && duration > 0 && user) {
+    if (currentTime > 30 && duration > 0) {
       const details = type === "movie" ? movieDetails : tvDetails;
       if (details) {
         const title = type === "movie" ? movieDetails?.title : tvDetails?.name;
@@ -199,12 +203,10 @@ export default function WatchPage() {
         }
       }
     }
-  }, [currentTime, duration, user, type, movieDetails, tvDetails, addToHistory]);
+  }, [currentTime, duration, type, movieDetails, tvDetails, addToHistory]);
 
-  // Fallback: Add to watch history after 30 seconds even if player doesn't send updates
+  // Fallback: Add to watch history after 30 seconds - now works for both authenticated and guest users
   useEffect(() => {
-    if (!user) return;
-    
     const timer = setTimeout(() => {
       const details = type === "movie" ? movieDetails : tvDetails;
       if (details) {
@@ -218,7 +220,7 @@ export default function WatchPage() {
     }, 32000); // 32 seconds to ensure it's past the 30-second mark
 
     return () => clearTimeout(timer);
-  }, [user, type, movieDetails, tvDetails, addToHistory, duration]);
+  }, [type, movieDetails, tvDetails, addToHistory, duration]);
 
   const handleSkipIntro = () => {
     if (timestamps?.introEnd) {

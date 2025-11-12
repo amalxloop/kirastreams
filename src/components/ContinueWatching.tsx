@@ -26,7 +26,7 @@ interface EnrichedWatchItem extends WatchProgressItem {
 }
 
 interface ContinueWatchingProps {
-  userId: string | null;
+  userId: string;
 }
 
 export function ContinueWatching({ userId }: ContinueWatchingProps) {
