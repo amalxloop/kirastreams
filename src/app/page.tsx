@@ -151,7 +151,9 @@ export default function HomePage() {
 
         {/* Dynamic Hero Banner with Auto-scroll */}
         {!query.trim() && trending.length > 0 && (
-          <DynamicHeroBanner items={trending.slice(0, 5)} autoScrollInterval={5000} />
+          <div className="pt-16">
+            <DynamicHeroBanner items={trending.slice(0, 5)} autoScrollInterval={5000} />
+          </div>
         )}
 
         {/* Search Bar with Autocomplete */}
