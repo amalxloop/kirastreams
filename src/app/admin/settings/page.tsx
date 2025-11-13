@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Settings as SettingsIcon, Save } from "lucide-react";
+import { Settings as SettingsIcon, Save, Eye } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function SettingsPage() {
   const { admin, loading: authLoading } = useAdmin();
@@ -58,7 +59,7 @@ export default function SettingsPage() {
       });
 
       if (res.ok) {
-        toast.success("Settings saved successfully");
+        toast.success("Settings saved successfully! Reload the homepage to see changes.");
       } else {
         toast.error("Failed to save settings");
       }
@@ -72,9 +73,17 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Platform Settings</h1>
-        <p className="text-muted-foreground">Configure your platform settings</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Website Settings</h1>
+          <p className="text-muted-foreground">Customize your platform appearance and settings</p>
+        </div>
+        <Link href="/" target="_blank">
+          <Button variant="outline" size="sm">
+            <Eye className="mr-2 h-4 w-4" />
+            Preview Site
+          </Button>
+        </Link>
       </div>
 
       <form onSubmit={saveSettings} className="space-y-6">
@@ -82,35 +91,48 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <SettingsIcon className="h-5 w-5 text-violet-500" />
-              Branding
+              Branding & Appearance
             </CardTitle>
-            <CardDescription>Customize your platform branding</CardDescription>
+            <CardDescription>Customize your platform name, logo, and colors (changes apply site-wide)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Platform Name</Label>
                 <Input
                   value={settings.platformName}
                   onChange={(e) => setSettings({ ...settings, platformName: e.target.value })}
+                  placeholder="KiraStreams"
                 />
+                <p className="text-xs text-muted-foreground">Appears in header, footer, and page titles</p>
               </div>
               <div className="space-y-2">
-                <Label>Primary Color</Label>
-                <Input
-                  type="color"
-                  value={settings.primaryColor}
-                  onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
-                />
+                <Label>Primary Brand Color</Label>
+                <div className="flex gap-2">
+                  <Input
+                    type="color"
+                    value={settings.primaryColor}
+                    onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
+                    className="w-20 h-10"
+                  />
+                  <Input
+                    type="text"
+                    value={settings.primaryColor}
+                    onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
+                    placeholder="#8b5cf6"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">Used for buttons and accents</p>
               </div>
             </div>
             <div className="space-y-2">
               <Label>Logo URL</Label>
               <Input
-                placeholder="https://..."
+                placeholder="https://example.com/logo.png"
                 value={settings.logoUrl}
                 onChange={(e) => setSettings({ ...settings, logoUrl: e.target.value })}
               />
+              <p className="text-xs text-muted-foreground">Replaces the default logo in header (leave empty for default)</p>
             </div>
           </CardContent>
         </Card>
@@ -118,7 +140,7 @@ export default function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Platform Configuration</CardTitle>
-            <CardDescription>Configure platform features and settings</CardDescription>
+            <CardDescription>Configure platform features and technical settings</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -128,11 +150,12 @@ export default function SettingsPage() {
                 value={settings.cdnBaseUrl}
                 onChange={(e) => setSettings({ ...settings, cdnBaseUrl: e.target.value })}
               />
+              <p className="text-xs text-muted-foreground">Base URL for content delivery network</p>
             </div>
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label>Watermark Enabled</Label>
-                <p className="text-sm text-muted-foreground">Add watermark to videos</p>
+                <p className="text-sm text-muted-foreground">Add watermark to video content</p>
               </div>
               <Switch
                 checked={settings.watermarkEnabled}

@@ -22,6 +22,13 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { WatchHistoryTimeline } from "@/components/WatchHistoryTimeline";
 import { getCurrentUserId } from "@/lib/guestUser";
 
+interface PlatformSettings {
+  platformName: string;
+  logoUrl: string | null;
+  primaryColor: string;
+  theme: string;
+}
+
 export default function HomePage() {
   const { user, logout } = useAuth();
   // Get user ID - either authenticated or guest
@@ -35,6 +42,30 @@ export default function HomePage() {
   const [anime, setAnime] = useState<TMDBMovie[]>([]);
   const [searchResults, setSearchResults] = useState<TMDBMovie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<PlatformSettings>({
+    platformName: "KiraStreams",
+    logoUrl: null,
+    primaryColor: "#8b5cf6",
+    theme: "dark",
+  });
+
+  // Fetch platform settings
+  useEffect(() => {
+    async function fetchSettings() {
+      try {
+        const res = await fetch("/api/settings");
+        if (res.ok) {
+          const data = await res.json();
+          setSettings(data);
+          // Apply primary color to root
+          document.documentElement.style.setProperty('--brand-primary', data.primaryColor);
+        }
+      } catch (error) {
+        console.error("Failed to fetch settings:", error);
+      }
+    }
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     async function fetchContent() {
@@ -81,12 +112,15 @@ export default function HomePage() {
     return query.trim() ? searchResults : activeTab === "all" ? trending : activeTab === "movie" ? movies : activeTab === "tv" ? tvShows : anime;
   }, [query, searchResults, activeTab, trending, movies, tvShows, anime]);
 
+  // Use dynamic logo or fallback to default
+  const logoUrl = settings.logoUrl || "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?";
+
   return (
     <>
       {/* SEO-optimized hidden content for search engines */}
       <div className="sr-only">
-        <h1>KiraStreams - Free Online Movies and TV Shows Streaming Website</h1>
-        <p>Watch free online movies and TV shows on KiraStreams, the best ad-free streaming platform. Stream unlimited HD movies and series without subscription. Enjoy free streaming of thousands of movies and TV shows online.</p>
+        <h1>{settings.platformName} - Free Online Movies and TV Shows Streaming Website</h1>
+        <p>Watch free online movies and TV shows on {settings.platformName}, the best ad-free streaming platform. Stream unlimited HD movies and series without subscription. Enjoy free streaming of thousands of movies and TV shows online.</p>
         <h2>Free Streaming Website Features</h2>
         <ul>
           <li>Ad-free streaming experience</li>
@@ -102,17 +136,17 @@ export default function HomePage() {
         {/* Nav */}
         <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
-            <Link href="/" className="flex items-center gap-3 shrink-0" aria-label="KiraStreams - Free Streaming Home">
+            <Link href="/" className="flex items-center gap-3 shrink-0" aria-label={`${settings.platformName} - Free Streaming Home`}>
               <div className="relative h-8 w-8 rounded-md overflow-hidden shadow-[0_0_24px_2px_rgba(167,139,250,0.45)]">
                 <Image
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
-                  alt="KiraStreams Logo - Free Streaming Platform"
+                  src={logoUrl}
+                  alt={`${settings.platformName} Logo - Free Streaming Platform`}
                   fill
                   sizes="32px"
                   className="object-cover"
                 />
               </div>
-              <span className="text-lg sm:text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">KiraStreams</span>
+              <span className="text-lg sm:text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">{settings.platformName}</span>
             </Link>
             <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
               <Link href="/movies" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -265,7 +299,7 @@ export default function HomePage() {
         {/* Footer */}
         <footer className="border-t border-border/40 py-10 mt-8">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} KiraStreams - Free Online Movies & TV Shows Streaming</p>
+            <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} {settings.platformName} - Free Online Movies & TV Shows Streaming</p>
             <p className="text-xs text-muted-foreground">Ad-Free Streaming • Powered by TMDB • Built with Next.js</p>
           </div>
         </footer>

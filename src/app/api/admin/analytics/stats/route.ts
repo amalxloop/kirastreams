@@ -26,25 +26,36 @@ export async function GET(request: NextRequest) {
     const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000);
     const fiveMinutesAgo = now - (5 * 60 * 1000);
 
-    // Get total active users (all registered users)
-    const activeUsersResult = await db.select({ count: count() }).from(users);
-    const activeUsers = activeUsersResult[0]?.count || 0;
+    // Get total unique users (both authenticated and guest) from watch history
+    const uniqueUsersResult = await db
+      .select({ 
+        userId: watchHistory.userId,
+      })
+      .from(watchHistory)
+      .groupBy(watchHistory.userId);
+    
+    const totalUniqueUsers = uniqueUsersResult.length;
+    
+    // Count guest users (userId starts with "guest-")
+    const guestUsers = uniqueUsersResult.filter(u => u.userId.startsWith('guest-')).length;
+    const authenticatedUsers = uniqueUsersResult.filter(u => !u.userId.startsWith('guest-')).length;
 
     // Get concurrent viewers (users who watched in last 5 minutes)
     const concurrentViewersResult = await db
-      .select({ count: count() })
+      .select({ userId: watchHistory.userId })
       .from(watchHistory)
-      .where(gte(watchHistory.watchedAt, fiveMinutesAgo));
-    const concurrentViewers = concurrentViewersResult[0]?.count || 0;
+      .where(gte(watchHistory.watchedAt, fiveMinutesAgo))
+      .groupBy(watchHistory.userId);
+    const concurrentViewers = concurrentViewersResult.length;
 
-    // Get total watch hours from watch history
+    // Get total watch hours from watch history (includes both guest and authenticated)
     const watchHoursResult = await db
       .select({ totalSeconds: sum(watchHistory.progressSeconds) })
       .from(watchHistory);
     const totalSeconds = Number(watchHoursResult[0]?.totalSeconds || 0);
     const totalWatchHours = Math.round(totalSeconds / 3600);
 
-    // Get new signups in last 30 days
+    // Get new signups in last 30 days (only authenticated users)
     const newSignupsResult = await db
       .select({ count: count() })
       .from(users)
@@ -52,7 +63,9 @@ export async function GET(request: NextRequest) {
     const newSignups = newSignupsResult[0]?.count || 0;
 
     return NextResponse.json({
-      activeUsers,
+      activeUsers: totalUniqueUsers,
+      authenticatedUsers,
+      guestUsers,
       concurrentViewers,
       totalWatchHours,
       newSignups,
