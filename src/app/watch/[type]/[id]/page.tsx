@@ -431,7 +431,6 @@ export default function WatchPage() {
               frameBorder="0"
               allowFullScreen
               allow="autoplay; fullscreen; encrypted-media; picture-in-picture; accelerometer; gyroscope"
-              sandbox="allow-same-origin allow-scripts allow-forms allow-presentation"
               referrerPolicy="no-referrer"
               loading="eager"
               onLoad={() => setPlayerLoading(false)}
