@@ -56,8 +56,6 @@ export default function WatchPage() {
   const [duration, setDuration] = useState(0);
   const [showSkipIntro, setShowSkipIntro] = useState(false);
   const [showSkipOutro, setShowSkipOutro] = useState(false);
-  const [isPlayerFocused, setIsPlayerFocused] = useState(false);
-  const [playerUnlocked, setPlayerUnlocked] = useState(false);
 
   // Hooks for watch progress and skip timestamps - now using userId (authenticated or guest)
   const { progress, saveProgress, addToHistory } = useWatchProgress(
@@ -76,27 +74,8 @@ export default function WatchPage() {
     return () => resetTheme();
   }, [contentId, type, applyTheme, resetTheme]);
 
-  // Auto-lock player after 3 seconds of no interaction
+  // Listen for player progress messages
   useEffect(() => {
-    if (playerUnlocked) {
-      const timeout = setTimeout(() => {
-        setPlayerUnlocked(false);
-      }, 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [playerUnlocked]);
-
-  // Prevent unwanted redirects from iframe
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      // Only allow navigation if user explicitly navigates away
-      if (!isPlayerFocused) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-
-    // Block popup windows from iframe
     const handleMessage = (event: MessageEvent) => {
       // Only accept messages from trusted domains
       const trustedDomains = ['vidfast.pro', 'vidzy.luna.tattoo', '2embed.cc'];
@@ -126,14 +105,12 @@ export default function WatchPage() {
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
     window.addEventListener('message', handleMessage);
     
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('message', handleMessage);
     };
-  }, [isPlayerFocused, saveProgress]);
+  }, [saveProgress]);
 
   // Memoize player URL with saved progress
   const playerUrl = useMemo(() => {
@@ -381,8 +358,6 @@ export default function WatchPage() {
           <div 
             className="relative w-full" 
             style={{ paddingBottom: "56.25%" }}
-            onMouseEnter={() => setIsPlayerFocused(true)}
-            onMouseLeave={() => setIsPlayerFocused(false)}
           >
             {/* Loading Overlay */}
             {playerLoading && (
@@ -434,31 +409,6 @@ export default function WatchPage() {
               )}
             </AnimatePresence>
 
-            {/* Protective Overlay - Prevents accidental ad clicks */}
-            <AnimatePresence>
-              {!playerUnlocked && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-[2px] cursor-pointer"
-                  onClick={() => setPlayerUnlocked(true)}
-                >
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1 }}
-                    className="bg-background/90 backdrop-blur-md px-6 py-4 rounded-lg border border-violet-500/50 shadow-[0_0_24px_rgba(139,92,246,0.4)]"
-                  >
-                    <p className="text-sm font-medium text-foreground flex items-center gap-2">
-                      <PlayCircle className="h-5 w-5 text-violet-400" />
-                      Click to enable player controls
-                    </p>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             <iframe
               key={type === "tv" ? `${player}-tv-${id}-${selectedSeason}-${selectedEpisode}` : `${player}-movie-${id}`}
               src={playerUrl}
@@ -477,7 +427,6 @@ export default function WatchPage() {
               style={{
                 WebkitBackfaceVisibility: "hidden",
                 WebkitTransform: "translate3d(0, 0, 0)",
-                pointerEvents: playerUnlocked ? "auto" : "none",
               }}
             />
           </div>
