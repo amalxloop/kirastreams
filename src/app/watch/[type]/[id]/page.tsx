@@ -56,6 +56,7 @@ export default function WatchPage() {
   const [duration, setDuration] = useState(0);
   const [showSkipIntro, setShowSkipIntro] = useState(false);
   const [showSkipOutro, setShowSkipOutro] = useState(false);
+  const [isPlayerFocused, setIsPlayerFocused] = useState(false);
 
   // Hooks for watch progress and skip timestamps - now using userId (authenticated or guest)
   const { progress, saveProgress, addToHistory } = useWatchProgress(
@@ -73,6 +74,55 @@ export default function WatchPage() {
     }
     return () => resetTheme();
   }, [contentId, type, applyTheme, resetTheme]);
+
+  // Prevent unwanted redirects from iframe
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Only allow navigation if user explicitly navigates away
+      if (!isPlayerFocused) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    // Block popup windows from iframe
+    const handleMessage = (event: MessageEvent) => {
+      // Only accept messages from trusted domains
+      const trustedDomains = ['vidfast.pro', 'vidzy.luna.tattoo', '2embed.cc'];
+      const origin = new URL(event.origin);
+      
+      if (!trustedDomains.some(domain => origin.hostname.includes(domain))) {
+        return;
+      }
+
+      try {
+        const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        
+        if (data.timestamp !== undefined && data.duration !== undefined) {
+          const progressSeconds = Math.floor(data.timestamp);
+          const totalSeconds = Math.floor(data.duration);
+          
+          setCurrentTime(progressSeconds);
+          setDuration(totalSeconds);
+          
+          // Save progress every 10 seconds
+          if (progressSeconds % 10 === 0 && totalSeconds > 0) {
+            saveProgress(progressSeconds, totalSeconds);
+          }
+        }
+      } catch (error) {
+        // Ignore parse errors
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [isPlayerFocused, saveProgress]);
 
   // Memoize player URL with saved progress
   const playerUrl = useMemo(() => {
@@ -148,32 +198,6 @@ export default function WatchPage() {
     const timeout = setTimeout(() => setPlayerLoading(false), 10000);
     return () => clearTimeout(timeout);
   }, [player, selectedSeason, selectedEpisode]);
-
-  // Watch progress tracking from player
-  useEffect(() => {
-    function handleMessage(event: MessageEvent) {
-      try {
-        const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-        
-        if (data.timestamp !== undefined && data.duration !== undefined) {
-          const progressSeconds = Math.floor(data.timestamp);
-          const totalSeconds = Math.floor(data.duration);
-          
-          setCurrentTime(progressSeconds);
-          setDuration(totalSeconds);
-          
-          // Save progress every 10 seconds - now works for both authenticated and guest users
-          if (progressSeconds % 10 === 0 && totalSeconds > 0) {
-            saveProgress(progressSeconds, totalSeconds);
-          }
-        }
-      } catch (error) {
-        // Ignore parse errors
-      }
-    }
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [saveProgress]);
 
   // Check if should show skip buttons
   useEffect(() => {
@@ -343,7 +367,12 @@ export default function WatchPage() {
         </div>
 
         <Card className="bg-background/70 backdrop-blur border border-border/50 overflow-hidden relative">
-          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+          <div 
+            className="relative w-full" 
+            style={{ paddingBottom: "56.25%" }}
+            onMouseEnter={() => setIsPlayerFocused(true)}
+            onMouseLeave={() => setIsPlayerFocused(false)}
+          >
             {/* Loading Overlay */}
             {playerLoading && (
               <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
@@ -402,6 +431,8 @@ export default function WatchPage() {
               frameBorder="0"
               allowFullScreen
               allow="autoplay; fullscreen; encrypted-media; picture-in-picture; accelerometer; gyroscope"
+              sandbox="allow-same-origin allow-scripts allow-forms allow-presentation"
+              referrerPolicy="no-referrer"
               loading="eager"
               onLoad={() => setPlayerLoading(false)}
               onError={() => {
