@@ -5,6 +5,7 @@ import ErrorReporter from "@/components/ErrorReporter";
 import Script from "next/script";
 import Providers from "@/components/Providers";
 
+// This will be dynamically generated based on settings
 export const metadata: Metadata = {
   metadataBase: new URL('https://kirastreams.com'),
   title: {

@@ -4,7 +4,6 @@ import { adminSettings } from '@/db/schema';
 
 export async function GET(request: NextRequest) {
   try {
-    // Try to get existing settings
     const settings = await db.select()
       .from(adminSettings)
       .limit(1);
@@ -21,6 +20,20 @@ export async function GET(request: NextRequest) {
       cdnBaseUrl: null,
       watermarkEnabled: false,
       theme: 'dark',
+      siteTagline: null,
+      seoDescription: null,
+      seoKeywords: null,
+      faviconUrl: null,
+      bannerMessage: null,
+      bannerEnabled: false,
+      contactEmail: null,
+      twitterUrl: null,
+      facebookUrl: null,
+      instagramUrl: null,
+      discordUrl: null,
+      footerText: null,
+      enableRegistration: true,
+      maintenanceMode: false,
       updatedAt: new Date().toISOString()
     };
 
@@ -69,7 +82,6 @@ export async function PATCH(request: NextRequest) {
       .limit(1);
 
     if (existingSettings.length === 0) {
-      // No settings exist, create default record first
       const defaultSettings = {
         platformName: 'KiraStreams',
         logoUrl: null,
@@ -77,6 +89,20 @@ export async function PATCH(request: NextRequest) {
         cdnBaseUrl: null,
         watermarkEnabled: false,
         theme: 'dark',
+        siteTagline: null,
+        seoDescription: null,
+        seoKeywords: null,
+        faviconUrl: null,
+        bannerMessage: null,
+        bannerEnabled: false,
+        contactEmail: null,
+        twitterUrl: null,
+        facebookUrl: null,
+        instagramUrl: null,
+        discordUrl: null,
+        footerText: null,
+        enableRegistration: true,
+        maintenanceMode: false,
         updatedAt: new Date().toISOString()
       };
 
@@ -89,26 +115,21 @@ export async function PATCH(request: NextRequest) {
       updatedAt: new Date().toISOString()
     };
 
-    if (requestBody.platformName !== undefined) {
-      updateData.platformName = requestBody.platformName;
-    }
-    if (requestBody.logoUrl !== undefined) {
-      updateData.logoUrl = requestBody.logoUrl;
-    }
-    if (requestBody.primaryColor !== undefined) {
-      updateData.primaryColor = requestBody.primaryColor;
-    }
-    if (requestBody.cdnBaseUrl !== undefined) {
-      updateData.cdnBaseUrl = requestBody.cdnBaseUrl;
-    }
-    if (requestBody.watermarkEnabled !== undefined) {
-      updateData.watermarkEnabled = requestBody.watermarkEnabled;
-    }
-    if (requestBody.theme !== undefined) {
-      updateData.theme = requestBody.theme;
-    }
+    // Map all possible fields
+    const fields = [
+      'platformName', 'logoUrl', 'primaryColor', 'cdnBaseUrl', 'watermarkEnabled', 
+      'theme', 'siteTagline', 'seoDescription', 'seoKeywords', 'faviconUrl',
+      'bannerMessage', 'bannerEnabled', 'contactEmail', 'twitterUrl', 'facebookUrl',
+      'instagramUrl', 'discordUrl', 'footerText', 'enableRegistration', 'maintenanceMode'
+    ];
 
-    // Update the settings record (there should only be one)
+    fields.forEach(field => {
+      if (requestBody[field] !== undefined) {
+        updateData[field] = requestBody[field];
+      }
+    });
+
+    // Update the settings record
     const updated = await db.update(adminSettings)
       .set(updateData)
       .returning();

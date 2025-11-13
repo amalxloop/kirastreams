@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogIn, Search, UserPlus, Film, Tv, TrendingUp, Sparkles } from "lucide-react";
+import { LogIn, Search, UserPlus, Film, Tv, TrendingUp, Sparkles, Twitter, Facebook, Instagram, MessageCircle, X } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { getTrending, getPopular, TMDBMovie, getImageUrl, getAnime } from "@/lib/tmdb";
@@ -27,11 +27,24 @@ interface PlatformSettings {
   logoUrl: string | null;
   primaryColor: string;
   theme: string;
+  siteTagline: string | null;
+  seoDescription: string | null;
+  seoKeywords: string | null;
+  faviconUrl: string | null;
+  bannerMessage: string | null;
+  bannerEnabled: boolean;
+  contactEmail: string | null;
+  twitterUrl: string | null;
+  facebookUrl: string | null;
+  instagramUrl: string | null;
+  discordUrl: string | null;
+  footerText: string | null;
+  enableRegistration: boolean;
+  maintenanceMode: boolean;
 }
 
 export default function HomePage() {
   const { user, logout } = useAuth();
-  // Get user ID - either authenticated or guest
   const userId = getCurrentUserId(user?.id);
   
   const [query, setQuery] = useState("");
@@ -42,11 +55,26 @@ export default function HomePage() {
   const [anime, setAnime] = useState<TMDBMovie[]>([]);
   const [searchResults, setSearchResults] = useState<TMDBMovie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
   const [settings, setSettings] = useState<PlatformSettings>({
     platformName: "KiraStreams",
     logoUrl: null,
     primaryColor: "#8b5cf6",
     theme: "dark",
+    siteTagline: null,
+    seoDescription: null,
+    seoKeywords: null,
+    faviconUrl: null,
+    bannerMessage: null,
+    bannerEnabled: false,
+    contactEmail: null,
+    twitterUrl: null,
+    facebookUrl: null,
+    instagramUrl: null,
+    discordUrl: null,
+    footerText: null,
+    enableRegistration: true,
+    maintenanceMode: false,
   });
 
   // Fetch platform settings
@@ -57,7 +85,6 @@ export default function HomePage() {
         if (res.ok) {
           const data = await res.json();
           setSettings(data);
-          // Apply primary color to root
           document.documentElement.style.setProperty('--brand-primary', data.primaryColor);
         }
       } catch (error) {
@@ -112,15 +139,17 @@ export default function HomePage() {
     return query.trim() ? searchResults : activeTab === "all" ? trending : activeTab === "movie" ? movies : activeTab === "tv" ? tvShows : anime;
   }, [query, searchResults, activeTab, trending, movies, tvShows, anime]);
 
-  // Use dynamic logo or fallback to default
   const logoUrl = settings.logoUrl || "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?";
+
+  const seoDescription = settings.seoDescription || `Watch free online movies and TV shows on ${settings.platformName}, the best ad-free streaming platform. Stream unlimited HD movies and series without subscription. Enjoy free streaming of thousands of movies and TV shows online.`;
+  const seoKeywords = settings.seoKeywords || "free online movies, free streaming website, ad free streaming, watch movies online free, free tv shows streaming";
 
   return (
     <>
-      {/* SEO-optimized hidden content for search engines */}
+      {/* SEO-optimized hidden content */}
       <div className="sr-only">
         <h1>{settings.platformName} - Free Online Movies and TV Shows Streaming Website</h1>
-        <p>Watch free online movies and TV shows on {settings.platformName}, the best ad-free streaming platform. Stream unlimited HD movies and series without subscription. Enjoy free streaming of thousands of movies and TV shows online.</p>
+        <p>{seoDescription}</p>
         <h2>Free Streaming Website Features</h2>
         <ul>
           <li>Ad-free streaming experience</li>
@@ -133,6 +162,22 @@ export default function HomePage() {
       </div>
       
       <main className="min-h-screen bg-[radial-gradient(800px_400px_at_20%_-10%,rgba(124,58,237,0.25),transparent),radial-gradient(800px_400px_at_80%_10%,rgba(59,130,246,0.2),transparent)]">
+        {/* Announcement Banner */}
+        {settings.bannerEnabled && settings.bannerMessage && !bannerDismissed && (
+          <div className="bg-gradient-to-r from-violet-600 to-sky-600 text-white py-3 px-4 relative">
+            <div className="mx-auto max-w-7xl flex items-center justify-between gap-4">
+              <p className="text-sm sm:text-base text-center flex-1">{settings.bannerMessage}</p>
+              <button 
+                onClick={() => setBannerDismissed(true)}
+                className="text-white/80 hover:text-white transition-colors"
+                aria-label="Dismiss banner"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Nav */}
         <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
@@ -146,7 +191,14 @@ export default function HomePage() {
                   className="object-cover"
                 />
               </div>
-              <span className="text-lg sm:text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">{settings.platformName}</span>
+              <div className="flex flex-col">
+                <span className="text-lg sm:text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">
+                  {settings.platformName}
+                </span>
+                {settings.siteTagline && (
+                  <span className="text-[10px] text-muted-foreground hidden sm:block">{settings.siteTagline}</span>
+                )}
+              </div>
             </Link>
             <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
               <Link href="/movies" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -162,7 +214,7 @@ export default function HomePage() {
             <div className="flex items-center gap-1 sm:gap-2">
               <ThemeToggle />
               {!user ? (
-                <AuthButtons />
+                <AuthButtons enableRegistration={settings.enableRegistration} />
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -188,25 +240,25 @@ export default function HomePage() {
           </div>
         </header>
 
-        {/* Dynamic Hero Banner with Auto-scroll */}
+        {/* Dynamic Hero Banner */}
         {!query.trim() && trending.length > 0 && (
           <div>
             <DynamicHeroBanner items={trending.slice(0, 5)} autoScrollInterval={5000} />
           </div>
         )}
 
-        {/* Search Bar with Autocomplete */}
+        {/* Search Bar */}
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4 pt-8" aria-label="Search movies and TV shows">
           <SearchAutocomplete onSearch={setQuery} />
         </section>
 
-        {/* Continue Watching Section - show for both logged-in and guest users */}
+        {/* Continue Watching Section */}
         {!query.trim() && <ContinueWatching userId={userId} />}
 
         {/* Smart Recommendations */}
         {!query.trim() && <RecommendationsSection />}
 
-        {/* Watch History Timeline - show for both logged-in and guest users */}
+        {/* Watch History Timeline */}
         {!query.trim() && <WatchHistoryTimeline userId={userId} days={7} limit={20} />}
 
         {/* Tabs & Content Grid */}
@@ -298,9 +350,49 @@ export default function HomePage() {
 
         {/* Footer */}
         <footer className="border-t border-border/40 py-10 mt-8">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} {settings.platformName} - Free Online Movies & TV Shows Streaming</p>
-            <p className="text-xs text-muted-foreground">Ad-Free Streaming • Powered by TMDB • Built with Next.js</p>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {/* Social Links */}
+            {(settings.twitterUrl || settings.facebookUrl || settings.instagramUrl || settings.discordUrl) && (
+              <div className="flex justify-center gap-6 mb-6">
+                {settings.twitterUrl && (
+                  <a href={settings.twitterUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Twitter">
+                    <Twitter className="h-5 w-5" />
+                  </a>
+                )}
+                {settings.facebookUrl && (
+                  <a href={settings.facebookUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Facebook">
+                    <Facebook className="h-5 w-5" />
+                  </a>
+                )}
+                {settings.instagramUrl && (
+                  <a href={settings.instagramUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Instagram">
+                    <Instagram className="h-5 w-5" />
+                  </a>
+                )}
+                {settings.discordUrl && (
+                  <a href={settings.discordUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Discord">
+                    <MessageCircle className="h-5 w-5" />
+                  </a>
+                )}
+              </div>
+            )}
+            
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-sm text-muted-foreground text-center sm:text-left">
+                {settings.footerText || `© ${new Date().getFullYear()} ${settings.platformName} - Free Online Movies & TV Shows Streaming`}
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-xs text-muted-foreground">
+                {settings.contactEmail && (
+                  <a href={`mailto:${settings.contactEmail}`} className="hover:text-foreground transition-colors">
+                    Contact Us
+                  </a>
+                )}
+                <span className="hidden sm:inline">•</span>
+                <span>Ad-Free Streaming</span>
+                <span className="hidden sm:inline">•</span>
+                <span>Powered by TMDB</span>
+              </div>
+            </div>
           </div>
         </footer>
       </main>
@@ -308,7 +400,7 @@ export default function HomePage() {
   );
 }
 
-function AuthButtons() {
+function AuthButtons({ enableRegistration }: { enableRegistration: boolean }) {
   return (
     <div className="flex items-center gap-1 sm:gap-2">
       <Dialog>
@@ -325,20 +417,22 @@ function AuthButtons() {
           <AuthForm mode="login" />
         </DialogContent>
       </Dialog>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button size="sm" className="bg-sky-600 hover:bg-sky-500 shadow-[0_0_16px_rgba(56,189,248,0.35)] text-xs sm:text-sm px-2 sm:px-4">
-            <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
-            <span className="hidden sm:inline">Sign up</span>
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Create your account</DialogTitle>
-          </DialogHeader>
-          <AuthForm mode="signup" />
-        </DialogContent>
-      </Dialog>
+      {enableRegistration && (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button size="sm" className="bg-sky-600 hover:bg-sky-500 shadow-[0_0_16px_rgba(56,189,248,0.35)] text-xs sm:text-sm px-2 sm:px-4">
+              <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Sign up</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Create your account</DialogTitle>
+            </DialogHeader>
+            <AuthForm mode="signup" />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
