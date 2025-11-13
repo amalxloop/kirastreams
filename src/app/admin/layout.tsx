@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -107,7 +108,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        <div className="border-t border-border/40 p-4">
+        <div className="border-t border-border/40 p-4 space-y-3">
+          <div className="flex items-center justify-between px-2">
+            <span className="text-xs text-muted-foreground">Theme</span>
+            <ThemeToggle />
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="w-full justify-start gap-3 h-auto p-2">
@@ -181,6 +186,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   );
                 })}
               </nav>
+              <div className="border-t border-border/40 p-4">
+                <div className="flex items-center justify-between px-2">
+                  <span className="text-xs text-muted-foreground">Theme</span>
+                  <ThemeToggle />
+                </div>
+              </div>
             </SheetContent>
           </Sheet>
 
@@ -196,6 +207,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Admin
             </span>
           </div>
+
+          <ThemeToggle />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
