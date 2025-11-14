@@ -144,11 +144,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Mobile Header */}
-        <header className="lg:hidden sticky top-0 z-40 flex h-14 items-center border-b border-border/40 bg-card/80 backdrop-blur px-1">
+        <header className="lg:hidden sticky top-0 z-40 flex h-12 items-center gap-0.5 border-b border-border/40 bg-card/80 backdrop-blur px-1">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="shrink-0 h-7 w-7 mr-0.5">
-                <Menu className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="shrink-0 h-6 w-6">
+                <Menu className="h-3.5 w-3.5" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
@@ -195,27 +195,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SheetContent>
           </Sheet>
 
-          <div className="flex items-center gap-1 min-w-0 flex-1 mr-0.5">
+          <div className="flex items-center gap-0.5 min-w-0 flex-1">
             <Image
               src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
               alt="Logo"
-              width={16}
-              height={16}
+              width={14}
+              height={14}
               className="rounded shrink-0"
             />
-            <span className="font-semibold text-[10px] text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-fuchsia-300 truncate hidden sm:block">
+            <span className="font-semibold text-[9px] text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-fuchsia-300 truncate hidden sm:block">
               Admin
             </span>
           </div>
 
-          <div className="shrink-0">
-            <ThemeToggle />
-          </div>
+          <ThemeToggle />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Avatar className="h-7 w-7 ring-2 ring-violet-500/50 cursor-pointer shrink-0 ml-0.5">
-                <AvatarFallback className="text-xs">{admin?.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
+              <Avatar className="h-6 w-6 ring-1 ring-violet-500/50 cursor-pointer shrink-0">
+                <AvatarFallback className="text-[9px]">{admin?.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
