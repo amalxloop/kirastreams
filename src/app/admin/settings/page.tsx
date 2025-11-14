@@ -135,26 +135,26 @@ export default function SettingsPage() {
 
       <form onSubmit={saveSettings}>
         <Tabs defaultValue="branding" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="branding" className="flex items-center gap-2">
-              <Palette className="h-4 w-4" />
-              Branding
+          <TabsList className="grid w-full grid-cols-5 gap-0.5 h-auto p-0.5 sm:p-1">
+            <TabsTrigger value="branding" className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2 px-1 sm:px-3 py-1.5 sm:py-2 text-[9px] sm:text-sm">
+              <Palette className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+              <span className="truncate">Brand</span>
             </TabsTrigger>
-            <TabsTrigger value="seo" className="flex items-center gap-2">
-              <Search className="h-4 w-4" />
-              SEO
+            <TabsTrigger value="seo" className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2 px-1 sm:px-3 py-1.5 sm:py-2 text-[9px] sm:text-sm">
+              <Search className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+              <span className="truncate">SEO</span>
             </TabsTrigger>
-            <TabsTrigger value="social" className="flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              Social
+            <TabsTrigger value="social" className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2 px-1 sm:px-3 py-1.5 sm:py-2 text-[9px] sm:text-sm">
+              <Globe className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+              <span className="truncate">Social</span>
             </TabsTrigger>
-            <TabsTrigger value="banner" className="flex items-center gap-2">
-              <Bell className="h-4 w-4" />
-              Banner
+            <TabsTrigger value="banner" className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2 px-1 sm:px-3 py-1.5 sm:py-2 text-[9px] sm:text-sm">
+              <Bell className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+              <span className="truncate">Banner</span>
             </TabsTrigger>
-            <TabsTrigger value="advanced" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Advanced
+            <TabsTrigger value="advanced" className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2 px-1 sm:px-3 py-1.5 sm:py-2 text-[9px] sm:text-sm">
+              <Shield className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+              <span className="truncate">Advanced</span>
             </TabsTrigger>
           </TabsList>
 
