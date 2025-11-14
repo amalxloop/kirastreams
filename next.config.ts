@@ -27,7 +27,6 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
-  swcMinify: true,
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },
@@ -41,4 +40,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-// Orchids restart: 1759645231952
+// Orchids restart: 1763037588737
