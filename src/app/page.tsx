@@ -180,9 +180,9 @@ export default function HomePage() {
 
         {/* Nav */}
         <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
-            <Link href="/" className="flex items-center gap-3 shrink-0" aria-label={`${settings.platformName} - Free Streaming Home`}>
-              <div className="relative h-8 w-8 rounded-md overflow-hidden shadow-[0_0_24px_2px_rgba(167,139,250,0.45)]">
+          <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-3">
+            <Link href="/" className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0" aria-label={`${settings.platformName} - Free Streaming Home`}>
+              <div className="relative h-6 w-6 sm:h-8 sm:w-8 shrink-0 rounded-md overflow-hidden shadow-[0_0_24px_2px_rgba(167,139,250,0.45)]">
                 <Image
                   src={logoUrl}
                   alt={`${settings.platformName} Logo - Free Streaming Platform`}
@@ -191,16 +191,16 @@ export default function HomePage() {
                   className="object-cover"
                 />
               </div>
-              <div className="flex flex-col">
-                <span className="text-lg sm:text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">
+              <div className="flex flex-col min-w-0">
+                <span className="text-sm sm:text-lg md:text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300 truncate">
                   {settings.platformName}
                 </span>
                 {settings.siteTagline && (
-                  <span className="text-[10px] text-muted-foreground hidden sm:block">{settings.siteTagline}</span>
+                  <span className="text-[10px] text-muted-foreground hidden lg:block truncate">{settings.siteTagline}</span>
                 )}
               </div>
             </Link>
-            <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
+            <nav className="hidden md:flex items-center gap-4 lg:gap-6 shrink-0" aria-label="Main navigation">
               <Link href="/movies" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Movies
               </Link>
@@ -211,14 +211,14 @@ export default function HomePage() {
                 Anime
               </Link>
             </nav>
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
               <ThemeToggle />
               {!user ? (
                 <AuthButtons enableRegistration={settings.enableRegistration} />
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Avatar className="h-8 w-8 ring-2 ring-violet-500/50 shadow-[0_0_12px_rgba(139,92,246,0.6)] cursor-pointer">
+                    <Avatar className="h-7 w-7 sm:h-8 sm:w-8 ring-2 ring-violet-500/50 shadow-[0_0_12px_rgba(139,92,246,0.6)] cursor-pointer shrink-0">
                       <AvatarImage src={user.avatarUrl} />
                       <AvatarFallback>{user.name?.slice(0,2).toUpperCase() || "KS"}</AvatarFallback>
                     </Avatar>
