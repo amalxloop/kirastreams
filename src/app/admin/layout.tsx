@@ -74,7 +74,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Desktop Sidebar */}
       <aside className="hidden lg:block w-64 border-r border-border/40 bg-card/50">
         <div className="flex h-16 items-center gap-3 border-b border-border/40 px-6">
-          <div className="relative h-10 w-10 rounded-md overflow-hidden shadow-[0_0_20px_2px_rgba(167,139,250,0.4)]">
+          <div className="relative h-12 w-12 rounded-md overflow-hidden shadow-[0_0_20px_2px_rgba(167,139,250,0.4)]">
             <Image
               src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
               alt="KiraStreams Logo"
@@ -83,7 +83,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             />
           </div>
           <div className="flex flex-col">
-            <span className="font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">
+            <span className="font-semibold text-xl text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">
               KiraStreams
             </span>
             <span className="text-xs text-muted-foreground">Admin Panel</span>
@@ -147,16 +147,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Mobile Header */}
-        <header className="lg:hidden sticky top-0 z-40 flex h-12 items-center gap-0.5 border-b border-border/40 bg-card/80 backdrop-blur px-1">
+        <header className="lg:hidden sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-border/40 bg-card/80 backdrop-blur px-3">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="shrink-0 h-6 w-6">
-                <Menu className="h-3.5 w-3.5" />
+              <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8">
+                <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
               <div className="flex h-16 items-center gap-3 border-b border-border/40 px-6">
-                <div className="relative h-8 w-8 rounded-md overflow-hidden">
+                <div className="relative h-10 w-10 rounded-md overflow-hidden shadow-[0_0_16px_2px_rgba(167,139,250,0.4)]">
                   <Image
                     src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
                     alt="KiraStreams Logo"
@@ -164,9 +164,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     className="object-cover"
                   />
                 </div>
-                <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-fuchsia-300">
-                  Admin Panel
-                </span>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">
+                    KiraStreams
+                  </span>
+                  <span className="text-xs text-muted-foreground">Admin Panel</span>
+                </div>
               </div>
               <nav className="space-y-1 px-3 py-4">
                 {navItems.map((item) => {
@@ -198,17 +201,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SheetContent>
           </Sheet>
 
-          <div className="flex items-center gap-0.5 min-w-0 flex-1">
-            <Image
-              src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
-              alt="Logo"
-              width={14}
-              height={14}
-              className="rounded shrink-0"
-            />
-            <span className="font-semibold text-[9px] text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-fuchsia-300 truncate hidden sm:block">
-              Admin
-            </span>
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="relative h-7 w-7 sm:h-8 sm:w-8 rounded overflow-hidden shadow-[0_0_12px_rgba(167,139,250,0.4)] shrink-0">
+              <Image
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
+                alt="KiraStreams Logo"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="font-semibold text-sm sm:text-base text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300 truncate">
+                KiraStreams
+              </span>
+              <span className="text-[10px] text-muted-foreground hidden sm:block">Admin Panel</span>
+            </div>
           </div>
 
           <ThemeToggle />

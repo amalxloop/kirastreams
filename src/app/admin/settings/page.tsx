@@ -120,15 +120,15 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold">Website Settings</h1>
-          <p className="text-muted-foreground">Comprehensive platform customization and configuration</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Website Settings</h1>
+          <p className="text-sm text-muted-foreground">Comprehensive platform customization and configuration</p>
         </div>
         <Link href="/" target="_blank">
-          <Button variant="outline" size="sm" className="h-8 text-xs px-2">
-            <Eye className="mr-1.5 h-3 w-3" />
-            Preview
+          <Button variant="outline" size="sm" className="gap-2">
+            <Eye className="h-4 w-4" />
+            <span>Preview</span>
           </Button>
         </Link>
       </div>
