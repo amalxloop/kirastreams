@@ -74,7 +74,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Desktop Sidebar */}
       <aside className="hidden lg:block w-64 border-r border-border/40 bg-card/50">
         <div className="flex h-16 items-center gap-3 border-b border-border/40 px-6">
-          <div className="relative h-8 w-8 rounded-md overflow-hidden shadow-[0_0_20px_2px_rgba(167,139,250,0.4)]">
+          <div className="relative h-10 w-10 rounded-md overflow-hidden shadow-[0_0_20px_2px_rgba(167,139,250,0.4)]">
             <Image
               src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/14c46311-1b67-41f4-8d9e-468e17cd22a3/generated_images/minimalist-letter-k-logo-for-streaming-p-7230a0f4-20250930063641.jpg?"
               alt="KiraStreams Logo"
@@ -82,9 +82,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className="object-cover"
             />
           </div>
-          <span className="font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">
-            Admin Panel
-          </span>
+          <div className="flex flex-col">
+            <span className="font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300">
+              KiraStreams
+            </span>
+            <span className="text-xs text-muted-foreground">Admin Panel</span>
+          </div>
         </div>
 
         <nav className="flex-1 space-y-1 px-3 py-4">
