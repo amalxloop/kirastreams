@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
 import { apiFetch, getApiBase } from "@/lib/utils";
 
 export type AuthUser = {
@@ -33,7 +33,19 @@ function setStoredToken(token: string | null) {
   notifyAll();
 }
 
-export function useAuth() {
+interface AuthContextType {
+  user: AuthUser | null;
+  token: string | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<{ user: AuthUser; token: string | undefined }>;
+  signup: (email: string, password: string, name?: string) => Promise<{ user: AuthUser; token: string | undefined }>;
+  logout: () => Promise<void>;
+  refresh: () => Promise<AuthUser | null>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(
     typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null
   );
@@ -139,13 +151,17 @@ export function useAuth() {
     setStoredToken(null);
   }, []);
 
-  return {
-    user,
-    token,
-    loading,
-    login,
-    signup,
-    logout,
-    refresh,
-  } as const;
+  return (
+    <AuthContext.Provider value={{ user, token, loading, login, signup, logout, refresh }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
 }
