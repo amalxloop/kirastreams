@@ -181,7 +181,7 @@ export default function HomePage() {
         {/* Nav */}
         <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
           <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8 h-14 sm:h-16 lg:h-20 flex items-center justify-between gap-1.5 sm:gap-3">
-            <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0" aria-label={`${settings.platformName} - Free Streaming Home`}>
+            <Link href="/" className="flex items-center gap-1.5 sm:gap-3 shrink-0" aria-label={`${settings.platformName} - Free Streaming Home`}>
               <div className="relative h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 shrink-0 rounded-md overflow-hidden shadow-[0_0_24px_2px_rgba(167,139,250,0.45)]">
                 <Image
                   src={logoUrl}
@@ -189,10 +189,11 @@ export default function HomePage() {
                   fill
                   sizes="(max-width: 640px) 32px, (max-width: 1024px) 40px, 48px"
                   className="object-cover"
+                  priority
                 />
               </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300 truncate">
+              <div className="flex flex-col">
+                <span className="text-base sm:text-xl md:text-2xl lg:text-3xl font-semibold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300 whitespace-nowrap">
                   {settings.platformName}
                 </span>
                 {settings.siteTagline && (
