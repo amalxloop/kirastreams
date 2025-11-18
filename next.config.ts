@@ -3,7 +3,6 @@ import path from "node:path";
 
 const LOADER = path.resolve(__dirname, 'src/visual-edits/component-tagger-loader.js');
 
-
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -30,14 +29,17 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },
-  turbopack: {
-    rules: {
-      "*.{jsx,tsx}": {
-        loaders: [LOADER]
+  // Only use Turbopack config in development
+  ...(process.env.NODE_ENV === 'development' && {
+    turbopack: {
+      rules: {
+        "*.{jsx,tsx}": {
+          loaders: [LOADER]
+        }
       }
     }
-  }
+  })
 };
 
 export default nextConfig;
-// Orchids restart: 1763037588737
+// Orchids restart: 1763455508838
