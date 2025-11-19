@@ -35,9 +35,8 @@ async function verifyAdminAuth(request: NextRequest) {
   }
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 ) {
   try {
     const admin = await verifyAdminAuth(request);
@@ -181,9 +180,8 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 ) {
   try {
     const admin = await verifyAdminAuth(request);
