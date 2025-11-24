@@ -62,13 +62,13 @@ export async function GET(request: NextRequest, context: { params: { id: string 
     const filters = [];
 
     if (search) {
-      filters.push(
-        or(
-          like(content.title, %${search}%),
-          like(content.description, %${search}%)
-        )
-      );
-    }
+  filters.push(
+    or(
+      like(content.title, `%${search}%`),
+      like(content.description, `%${search}%`)
+    )
+  );
+}
 
     if (type === "movie" || type === "tv") filters.push(eq(content.type, type));
     if (status === "published" || status === "draft")
