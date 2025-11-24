@@ -1,232 +1,182 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { content, admins } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import jwt from 'jsonwebtoken';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/db";
+import { content, users } from "@/db/schema";
+import { eq, like, and, or, desc, asc, count } from "drizzle-orm";
+import jwt from "jsonwebtoken";
 
-interface AdminTokenPayload {
-  id: number;
-  email: string;
-  role: string;
-}
+const ADMIN_SECRET = process.env.ADMIN_JWT_SECRET || "fallback_secret";
 
+// ---------- AUTH MIDDLEWARE ----------
 async function verifyAdminAuth(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return null;
-    }
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
 
     const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, 'kira-admin-secret') as AdminTokenPayload;
+    const decoded = jwt.verify(token, ADMIN_SECRET) as {
+      id: number;
+      email: string;
+      role: string;
+    };
 
-    const admin = await db.select()
-      .from(admins)
-      .where(eq(admins.id, decoded.id))
+    const admin = await db
+      .select()
+      .from(users)
+      .where(and(eq(users.id, decoded.id), eq(users.role, "admin")))
       .limit(1);
 
-    if (admin.length === 0 || admin[0].role !== 'admin') {
-      return null;
-    }
-
-    return admin[0];
-  } catch (error) {
+    return admin.length > 0 ? admin[0] : null;
+  } catch {
     return null;
   }
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// ---------- GET: List Content ----------
+export async function GET(request: NextRequest, context: { params: { id: string } }) {
   try {
     const admin = await verifyAdminAuth(request);
     if (!admin) {
-      return NextResponse.json({
-        error: 'Authentication required',
-        code: 'AUTH_REQUIRED'
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          error: "Authentication required or insufficient permissions",
+          code: "UNAUTHORIZED",
+        },
+        { status: 401 }
+      );
     }
 
-    const id = params.id;
-    if (!id || isNaN(parseInt(id))) {
-      return NextResponse.json({
-        error: 'Valid ID is required',
-        code: 'INVALID_ID'
-      }, { status: 400 });
+    const { searchParams } = new URL(request.url);
+
+    const limit = Math.min(Number(searchParams.get("limit") || 10), 100);
+    const offset = Number(searchParams.get("offset") || 0);
+
+    const search = searchParams.get("search");
+    const type = searchParams.get("type");
+    const status = searchParams.get("status");
+
+    const sortField = searchParams.get("sort") || "createdAt";
+    const sortOrder = searchParams.get("order") || "desc";
+
+    let query = db.select().from(content);
+
+    const filters = [];
+
+    if (search) {
+      filters.push(
+        or(
+          like(content.title, %${search}%),
+          like(content.description, %${search}%)
+        )
+      );
     }
 
-    const contentRecord = await db.select()
-      .from(content)
-      .where(eq(content.id, parseInt(id)))
-      .limit(1);
+    if (type === "movie" || type === "tv") filters.push(eq(content.type, type));
+    if (status === "published" || status === "draft")
+      filters.push(eq(content.status, status));
 
-    if (contentRecord.length === 0) {
-      return NextResponse.json({
-        error: 'Content not found',
-        code: 'CONTENT_NOT_FOUND'
-      }, { status: 404 });
-    }
+    if (filters.length > 0) query = query.where(and(...filters));
 
-    return NextResponse.json(contentRecord[0]);
-  } catch (error) {
-    console.error('GET error:', error);
-    return NextResponse.json({
-      error: 'Internal server error: ' + error
-    }, { status: 500 });
-  }
-}
+    const orderBy = sortOrder === "asc" ? asc : desc;
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const admin = await verifyAdminAuth(request);
-    if (!admin) {
-      return NextResponse.json({
-        error: 'Authentication required',
-        code: 'AUTH_REQUIRED'
-      }, { status: 401 });
-    }
-
-    const id = params.id;
-    if (!id || isNaN(parseInt(id))) {
-      return NextResponse.json({
-        error: 'Valid ID is required',
-        code: 'INVALID_ID'
-      }, { status: 400 });
-    }
-
-    const requestBody = await request.json();
-    const {
-      title,
-      description,
-      type,
-      genre,
-      language,
-      thumbnailUrl,
-      posterUrl,
-      trailerUrl,
-      videoUrl,
-      subtitleUrls,
-      tmdbId,
-      releaseDate,
-      duration,
-      status,
-      viewCount
-    } = requestBody;
-
-    // Validate type if provided
-    if (type && !['movie', 'tv'].includes(type)) {
-      return NextResponse.json({
-        error: 'Type must be either "movie" or "tv"',
-        code: 'INVALID_TYPE'
-      }, { status: 400 });
-    }
-
-    // Validate status if provided
-    if (status && !['published', 'draft'].includes(status)) {
-      return NextResponse.json({
-        error: 'Status must be either "published" or "draft"',
-        code: 'INVALID_STATUS'
-      }, { status: 400 });
-    }
-
-    // Check if content exists
-    const existingContent = await db.select()
-      .from(content)
-      .where(eq(content.id, parseInt(id)))
-      .limit(1);
-
-    if (existingContent.length === 0) {
-      return NextResponse.json({
-        error: 'Content not found',
-        code: 'CONTENT_NOT_FOUND'
-      }, { status: 404 });
-    }
-
-    // Build update object with only provided fields
-    const updates: any = {
-      updatedAt: new Date().toISOString()
+    const validSortFields = {
+      title: content.title,
+      type: content.type,
+      status: content.status,
+      releaseDate: content.releaseDate,
+      viewCount: content.viewCount,
+      createdAt: content.createdAt,
     };
 
-    if (title !== undefined) updates.title = title?.trim();
-    if (description !== undefined) updates.description = description?.trim();
-    if (type !== undefined) updates.type = type;
-    if (genre !== undefined) updates.genre = genre;
-    if (language !== undefined) updates.language = language?.trim();
-    if (thumbnailUrl !== undefined) updates.thumbnailUrl = thumbnailUrl?.trim();
-    if (posterUrl !== undefined) updates.posterUrl = posterUrl?.trim();
-    if (trailerUrl !== undefined) updates.trailerUrl = trailerUrl?.trim();
-    if (videoUrl !== undefined) updates.videoUrl = videoUrl?.trim();
-    if (subtitleUrls !== undefined) updates.subtitleUrls = subtitleUrls;
-    if (tmdbId !== undefined) updates.tmdbId = tmdbId;
-    if (releaseDate !== undefined) updates.releaseDate = releaseDate;
-    if (duration !== undefined) updates.duration = duration;
-    if (status !== undefined) updates.status = status;
-    if (viewCount !== undefined) updates.viewCount = viewCount;
+    query = query.orderBy(orderBy(validSortFields[sortField] || content.createdAt));
 
-    const updatedContent = await db.update(content)
-      .set(updates)
-      .where(eq(content.id, parseInt(id)))
-      .returning();
+    const results = await query.limit(limit).offset(offset);
 
-    return NextResponse.json(updatedContent[0]);
-  } catch (error) {
-    console.error('PATCH error:', error);
+    let countQuery = db.select({ count: count() }).from(content);
+    if (filters.length) countQuery = countQuery.where(and(...filters));
+    const [{ count: totalCount }] = await countQuery;
+
     return NextResponse.json({
-      error: 'Internal server error: ' + error
-    }, { status: 500 });
+      data: results,
+      pagination: {
+        total: totalCount,
+        limit,
+        offset,
+        hasMore: offset + limit < totalCount,
+      },
+    });
+  } catch (err) {
+    console.error("GET /api/admin/content error:", err);
+    return NextResponse.json(
+      {
+        error: "Internal server error",
+        code: "INTERNAL_ERROR",
+      },
+      { status: 500 }
+    );
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// ---------- POST: Create Content ----------
+export async function POST(request: NextRequest, context: { params: { id: string } }) {
   try {
     const admin = await verifyAdminAuth(request);
     if (!admin) {
-      return NextResponse.json({
-        error: 'Authentication required',
-        code: 'AUTH_REQUIRED'
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          error: "Authentication required or insufficient permissions",
+          code: "UNAUTHORIZED",
+        },
+        { status: 401 }
+      );
     }
 
-    const id = params.id;
-    if (!id || isNaN(parseInt(id))) {
-      return NextResponse.json({
-        error: 'Valid ID is required',
-        code: 'INVALID_ID'
-      }, { status: 400 });
+    const body = await request.json();
+    const { title, type } = body;
+
+    if (!title  typeof title !== "string"  title.trim() === "") {
+      return NextResponse.json(
+        { error: "Title required", code: "MISSING_TITLE" },
+        { status: 400 }
+      );
     }
 
-    // Check if content exists
-    const existingContent = await db.select()
-      .from(content)
-      .where(eq(content.id, parseInt(id)))
-      .limit(1);
-
-    if (existingContent.length === 0) {
-      return NextResponse.json({
-        error: 'Content not found',
-        code: 'CONTENT_NOT_FOUND'
-      }, { status: 404 });
+if (!type || (type !== "movie" && type !== "tv")) {
+      return NextResponse.json(
+        { error: 'Type must be "movie" or "tv"', code: "INVALID_TYPE" },
+        { status: 400 }
+      );
     }
 
-    const deletedContent = await db.delete(content)
-      .where(eq(content.id, parseInt(id)))
-      .returning();
+    const now = new Date().toISOString();
 
-    return NextResponse.json({
-      message: 'Content deleted successfully',
-      deletedContent: deletedContent[0]
-    });
-  } catch (error) {
-    console.error('DELETE error:', error);
-    return NextResponse.json({
-      error: 'Internal server error: ' + error
-    }, { status: 500 });
+    const insertData = {
+      title: title.trim(),
+      description: body.description || null,
+      type,
+      genre: body.genre || null,
+      language: body.language || "en",
+      thumbnailUrl: body.thumbnailUrl || null,
+      posterUrl: body.posterUrl || null,
+      trailerUrl: body.trailerUrl || null,
+      videoUrl: body.videoUrl || null,
+      subtitleUrls: body.subtitleUrls || null,
+      tmdbId: body.tmdbId || null,
+      releaseDate: body.releaseDate || null,
+      duration: body.duration || null,
+      status: body.status === "published" ? "published" : "draft",
+      viewCount: body.viewCount || 0,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const [created] = await db.insert(content).values(insertData).returning();
+
+    return NextResponse.json(created, { status: 201 });
+  } catch (err) {
+    console.error("POST /api/admin/content error:", err);
+    return NextResponse.json(
+      { error: "Internal server error", code: "INTERNAL_ERROR" },
+      { status: 500 }
+    );
   }
 }
