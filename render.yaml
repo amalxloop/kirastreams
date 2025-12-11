@@ -2,8 +2,8 @@ services:
   - type: web
     name: kirastreams
     env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    buildCommand: npm install && npm run dev
+    startCommand: npm run dev
     envVars:
       - key: NODE_ENV
         value: production
